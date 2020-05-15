@@ -8,11 +8,19 @@
 #
 import numpy
 import mrcfile
-import os
 from math import sqrt, log
 
 
-def process_map(input_filename, output_filename, mask_filename=None, roi=None, threshold=None, threshold_type="abs", scale=None, resolution=None):
+def process_map(
+    input_filename,
+    output_filename,
+    mask_filename=None,
+    roi=None,
+    threshold=None,
+    threshold_type="abs",
+    scale=None,
+    resolution=None,
+):
     """
     Edit an mrc file
 
@@ -42,15 +50,21 @@ def process_map(input_filename, output_filename, mask_filename=None, roi=None, t
     # Filter to a resolution. Use a guassian filter in fourier space with
     # HWHM = 1 / resolution
     if resolution is not None:
-        voxel_size = (infile.voxel_size["z"], infile.voxel_size["y"], infile.voxel_size["x"])
+        voxel_size = (
+            infile.voxel_size["z"],
+            infile.voxel_size["y"],
+            infile.voxel_size["x"],
+        )
         fdata = numpy.fft.fftn(data)
-        z, y, x = numpy.mgrid[0:fdata.shape[0],0:fdata.shape[1],0:fdata.shape[2]]
-        z = (1 / voxel_size[0]) * (z - fdata.shape[0]//2) / fdata.shape[0]
-        y = (1 / voxel_size[1]) * (y - fdata.shape[1]//2) / fdata.shape[1]
-        x = (1 / voxel_size[2]) * (x - fdata.shape[2]//2) / fdata.shape[2]
-        r = numpy.sqrt(x**2 + y**2 + z**2)
-        sigma = 1.0 / (sqrt(2*log(2))*resolution)
-        mask = numpy.exp(-0.5*(r / sigma)**2)
+        z, y, x = numpy.mgrid[
+            0 : fdata.shape[0], 0 : fdata.shape[1], 0 : fdata.shape[2]
+        ]
+        z = (1 / voxel_size[0]) * (z - fdata.shape[0] // 2) / fdata.shape[0]
+        y = (1 / voxel_size[1]) * (y - fdata.shape[1] // 2) / fdata.shape[1]
+        x = (1 / voxel_size[2]) * (x - fdata.shape[2] // 2) / fdata.shape[2]
+        r = numpy.sqrt(x ** 2 + y ** 2 + z ** 2)
+        sigma = 1.0 / (sqrt(2 * log(2)) * resolution)
+        mask = numpy.exp(-0.5 * (r / sigma) ** 2)
         mask = numpy.fft.fftshift(mask)
         fdata = fdata * mask
         data = numpy.real(numpy.fft.ifftn(fdata)).astype("float32")
@@ -63,7 +77,10 @@ def process_map(input_filename, output_filename, mask_filename=None, roi=None, t
     # Mask the data
     if threshold is not None:
         if threshold_type is "abs":
-            print("Min = %.2g / Max = %.2g / Threshold = %.2g" % (data.min(), data.max(), threshold))
+            print(
+                "Min = %.2g / Max = %.2g / Threshold = %.2g"
+                % (data.min(), data.max(), threshold)
+            )
             data = data * (data > threshold)
         else:
             if maskdata is None:
@@ -78,7 +95,7 @@ def process_map(input_filename, output_filename, mask_filename=None, roi=None, t
     # Apply the maskdata
     if maskdata is not None:
         data = data * maskdata
-        
+
     # Write the output file
     print("Writing %s" % output_filename)
     print("ROI:")

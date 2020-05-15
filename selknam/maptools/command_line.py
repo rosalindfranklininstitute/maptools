@@ -22,14 +22,33 @@ def main():
     parser.add_argument(
         "-i", dest="input", default=None, required=True, help="The input file"
     )
-    parser.add_argument(
-        "-m", dest="mask", default=None, help="The mask file"
-    )
+    parser.add_argument("-m", dest="mask", default=None, help="The mask file")
     parser.add_argument("--roi", dest="roi", default=None, help="Set an ROI")
-    parser.add_argument("--threshold", dest="threshold", type=float, default=None, help="Set a threshold")
-    parser.add_argument("--threshold_type", dest="threshold_type", type=str, default="abs", choices=["abs", "normalized"], help="Set a threshold")
-    parser.add_argument("--scale", dest="scale", type=float, default=1, help="Scale the map")
-    parser.add_argument("--resolution", dest="resolution", type=float, default=None, help="Filter to resolution")
+    parser.add_argument(
+        "--threshold",
+        dest="threshold",
+        type=float,
+        default=None,
+        help="Set a threshold",
+    )
+    parser.add_argument(
+        "--threshold_type",
+        dest="threshold_type",
+        type=str,
+        default="abs",
+        choices=["abs", "normalized"],
+        help="Set a threshold",
+    )
+    parser.add_argument(
+        "--scale", dest="scale", type=float, default=1, help="Scale the map"
+    )
+    parser.add_argument(
+        "--resolution",
+        dest="resolution",
+        type=float,
+        default=None,
+        help="Filter to resolution",
+    )
 
     # Parse the arguments
     args = parser.parse_args()
@@ -40,7 +59,7 @@ def main():
         assert x1 > x0
         assert y1 > y0
         assert z1 > z0
-        roi=(x0, y0, z0, x1, y1, z1)
+        roi = (x0, y0, z0, x1, y1, z1)
     else:
         roi = None
 
@@ -57,4 +76,5 @@ def main():
         threshold=args.threshold,
         threshold_type=args.threshold_type,
         scale=args.scale,
-        resolution=args.resolution)
+        resolution=args.resolution,
+    )
