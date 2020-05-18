@@ -23,11 +23,7 @@ def main():
         setup_requires=["pytest-runner"],
         tests_require=tests_require,
         test_suite="tests",
-        entry_points={
-            "console_scripts": [
-                "selknam.process_map=selknam.maptools.command_line:main",
-            ]
-        },
+        entry_points={"console_scripts": ["map=selknam.maptools.command_line:main"]},
         extras_require={
             "build_sphinx": ["sphinx", "sphinx_rtd_theme"],
             "test": tests_require,
