@@ -84,9 +84,7 @@ def array_fsc(
     YY = numpy.abs(Y) ** 2
     XY = numpy.real(X * numpy.conj(Y))
 
-    # Compute local variance and covariance either by binning with resolution
-    # or by computing a running mean
-    # if nbins is not None and nbins > 0:
+    # Compute local variance and covariance by binning with resolution
     bin_index = numpy.floor(nbins * R * resolution ** 2).astype("int32")
     varX = numpy.bincount(bin_index, XX)
     varY = numpy.bincount(bin_index, YY)
