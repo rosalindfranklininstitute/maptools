@@ -35,6 +35,9 @@ def array_fsc(
         array: The FSC
 
     """
+    # Check the axes
+    if type(axes) in [int, float]:
+        axes = (axes,)
 
     # Get the subset of data
     logger.info("Computing FSC")
@@ -126,6 +129,9 @@ def mapfile_fsc(
         axes (tuple): The axes of the plane to compute the FSC
 
     """
+    # Check the axes
+    if type(axes) in [int, float]:
+        axes = (axes,)
 
     # Open the input files
     infile1 = read(input_filename1)

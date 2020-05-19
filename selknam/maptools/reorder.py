@@ -44,7 +44,7 @@ def array_reorder(data, original_order, new_order):
         logger.info("Swapping axis %d with %d" % (1, index))
         data = numpy.swapaxes(data, 1, index)
         original_order = swap(original_order, 1, index)
-    assert original_order == new_order
+    assert tuple(original_order) == tuple(new_order)
 
     # Return the reordered array
     return data

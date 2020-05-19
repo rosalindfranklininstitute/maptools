@@ -17,7 +17,9 @@ from selknam.maptools.reorder import reorder
 logger = logging.getLogger(__name__)
 
 
-def array_fsc3d(data1, data2, kernel=9, resolution=None, **kwargs):
+def array_fsc3d(
+    data1, data2, kernel=9, resolution=None, voxel_size=(1, 1, 1), **kwargs
+):
     """
     Compute the local FSC of the map
 
@@ -59,7 +61,6 @@ def array_fsc3d(data1, data2, kernel=9, resolution=None, **kwargs):
     # Create a resolution mask
     if resolution is not None:
         shape = fsc.shape
-        voxel_size = infile1.voxel_size
         Z, Y, X = numpy.mgrid[0 : shape[0], 0 : shape[1], 0 : shape[2]]
         Z = (1.0 / voxel_size["z"]) * (Z - shape[0] // 2) / shape[0]
         Y = (1.0 / voxel_size["y"]) * (Y - shape[1] // 2) / shape[1]
@@ -102,7 +103,13 @@ def mapfile_fsc3d(
     data2 = reorder(data2, read_axis_order(infile2), read_axis_order(infile1))
 
     # Compute the local FSC
-    fsc = fsc3d(data1, data2, kernel=kernel, resolution=resolution)
+    fsc = fsc3d(
+        data1,
+        data2,
+        kernel=kernel,
+        resolution=resolution,
+        voxel_size=infile1.voxel_size,
+    )
 
     # Write the output file
     write(output_filename, fsc.astype("float32"), infile=infile1)

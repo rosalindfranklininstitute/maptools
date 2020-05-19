@@ -23,6 +23,10 @@ def array_filter(
     resolution=None,
     voxel_size=(1, 1, 1),
 ):
+    # Check input resolution
+    if type(resolution) == int or type(resolution) == float:
+        resolution = [resolution]
+    resolution = list(sorted(resolution))
 
     # Compute the FFT of the input data
     fdata = numpy.fft.fftn(data)
@@ -59,17 +63,17 @@ def array_filter(
 
         # Create the band pass filter
         assert len(resolution) == 2
-        assert resolution[0] > resolution[1]
+        assert resolution[1] > resolution[0]
         assert filter_shape == "square"
-        mask = (r >= (1 / resolution[0])) & (r < (1 / resolution[1]))
+        mask = (r >= (1 / resolution[1])) & (r < (1 / resolution[0]))
 
     elif filter_type == "bandstop":
 
         # Create the band stop filter
         assert len(resolution) == 2
-        assert resolution[0] > resolution[1]
+        assert resolution[1] > resolution[0]
         assert filter_shape == "square"
-        mask = (r < (1 / resolution[0])) & (r >= (1 / resolution[1]))
+        mask = (r < (1 / resolution[1])) & (r >= (1 / resolution[0]))
 
     # Apply the filter
     logger.info(

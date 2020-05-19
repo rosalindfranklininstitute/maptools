@@ -33,18 +33,7 @@ def array_mask(
 
     """
 
-    # Open the input file
-    infile = read(input_filename)
-
-    # Open the mask file
-    maskfile = read(mask_filename)
-
-    # Apply the mask
-    data = infile.data
-    mask = maskfile.data
-
-    # Reorder the maskfile axes to match the data
-    mask = reorder(mask, read_axis_order(maskfile), read_axis_order(infile1))
+    # Apply mask
     if shift:
         logger.info("Shifting mask")
         mask = numpy.fft.fftshift(mask)
@@ -89,13 +78,13 @@ def mapfile_mask(
     mask = maskfile.data
 
     # Reorder the maskfile axes to match the data
-    mask = reorder(mask, read_axis_order(maskfile), read_axis_order(infile1))
+    mask = reorder(mask, read_axis_order(maskfile), read_axis_order(infile))
 
     # Apply the mask
-    data = array_mask(mask)
+    data = array_mask(data, mask, fourier_space=fourier_space, shift=shift)
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    write(output_filename, data.astype("float32"), infile=infile)
 
 
 def mask(*args, **kwargs):
@@ -103,7 +92,7 @@ def mask(*args, **kwargs):
     Mask the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename1" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_filename" in kwargs:
         func = mapfile_mask
     else:
         func = array_mask
