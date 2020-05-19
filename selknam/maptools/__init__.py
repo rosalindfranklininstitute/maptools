@@ -11,6 +11,7 @@ from selknam.maptools.crop import crop
 from selknam.maptools.edit import edit
 from selknam.maptools.filter import filter
 from selknam.maptools.fft import fft
+from selknam.maptools.fsc import fsc
 from selknam.maptools.fsc3d import fsc3d
 from selknam.maptools.mask import mask
 from selknam.maptools.rebin import rebin
@@ -26,6 +27,7 @@ __all__ = [
     "edit",
     "filter",
     "fft",
+    "fsc",
     "fsc3d",
     "mask",
     "rebin",

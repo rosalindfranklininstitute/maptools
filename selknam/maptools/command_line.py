@@ -84,6 +84,23 @@ def fft(args):
     )
 
 
+def fsc(args):
+    """
+    Compute the map FSC
+
+    Args:
+        args (object): The parsed arguments
+
+    """
+    selknam.maptools.fsc(
+        input_filename1=args.input,
+        input_filename2=args.input2,
+        output_filename=args.output,
+        nbins=args.nbins,
+        resolution=args.resolution,
+    )
+
+
 def fsc3d(args):
     """
     Compute the local map FSC
@@ -395,6 +412,53 @@ def main(args=None):
             type=bool,
             default=True,
             help="Normalize before computing FFT",
+        )
+
+    def add_fsc_arguments(subparsers, parser_common):
+        """
+        Add command line arguments for the fsc command
+
+        """
+
+        # Create the parser for the "fsc" command
+        parser_fsc = subparsers.add_parser(
+            "fsc", parents=[parser_common], help="Compute map FSC"
+        )
+
+        # Add some arguments
+        parser_fsc.add_argument(
+            "-o",
+            "--output",
+            dest="output",
+            type=str,
+            default="fsc.png",
+            help="The output fsc curvae",
+        )
+        parser_fsc.add_argument(
+            "-i2",
+            "--input2",
+            dest="input2",
+            type=str,
+            default=None,
+            help="The input map file",
+        )
+        parser_fsc.add_argument(
+            "-n",
+            "--nbins",
+            dest="nbins",
+            type=int,
+            default=20,
+            help="The number of FSC bins",
+        )
+
+        # Add some arguments
+        parser_fsc.add_argument(
+            "-r",
+            "--resolution",
+            dest="resolution",
+            type=float,
+            default=None,
+            help="The resolution to compute to",
         )
 
     def add_fsc3d_arguments(subparsers, parser_common):
@@ -764,6 +828,7 @@ def main(args=None):
     add_edit_arguments(subparsers, parser_common)
     add_filter_arguments(subparsers, parser_common)
     add_fft_arguments(subparsers, parser_common)
+    add_fsc_arguments(subparsers, parser_common)
     add_fsc3d_arguments(subparsers, parser_common)
     add_mask_arguments(subparsers, parser_common)
     add_reorder_arguments(subparsers, parser_common)
@@ -793,6 +858,7 @@ def main(args=None):
         "edit": edit,
         "filter": filter,
         "fft": fft,
+        "fsc": fsc,
         "fsc3d": fsc3d,
         "mask": mask,
         "reorder": reorder,
