@@ -8,25 +8,28 @@
 #
 import logging
 import numpy
-from matplotlib import pylab
+from matplotlib import pylab, ticker
 from selknam.maptools.util import read, read_axis_order
 from selknam.maptools.reorder import reorder
+from math import sqrt
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def array_fsc(data1, data2, nbins=20, resolution=None, voxel_size=(1, 1, 1), **kwargs):
+def array_fsc(
+    data1, data2, nbins=20, resolution=None, voxel_size=(1, 1, 1), axes=None, **kwargs
+):
     """
     Compute the local FSC of the map
 
     Args:
         data1 (array): The input map 1
         data2 (array): The input map 2
-        kernel (int): The kernel size
         nbins (int): The number of bins
         resolution (float): The resolution limit
+        axes (tuple): The axes of the plane to compute the FSC
 
     Returns:
         array: The FSC
@@ -46,50 +49,94 @@ def array_fsc(data1, data2, nbins=20, resolution=None, voxel_size=(1, 1, 1), **k
     Z = (1.0 / voxel_size["z"]) * (Z - shape[0] // 2) / shape[0]
     Y = (1.0 / voxel_size["y"]) * (Y - shape[1] // 2) / shape[1]
     X = (1.0 / voxel_size["x"]) * (X - shape[2] // 2) / shape[2]
-    R = numpy.sqrt(X ** 2 + Y ** 2 + Z ** 2).flatten()
+    R = numpy.fft.fftshift(X ** 2 + Y ** 2 + Z ** 2)
 
     # Compute the FFT of the data
-    X = numpy.fft.fftshift(numpy.fft.fftn(data1)).flatten()
-    Y = numpy.fft.fftshift(numpy.fft.fftn(data2)).flatten()
+    X = numpy.fft.fftn(data1)
+    Y = numpy.fft.fftn(data2)
+
+    # Select the data along the selected axis
+    if axes is not None:
+        index = [0, 0, 0]
+        for a in axes:
+            index[a] = slice(None)
+        index = tuple(index)
+        X = X[index]
+        Y = Y[index]
+        R = R[index]
+
+    # Flatten the array
+    X = X.flatten()
+    Y = Y.flatten()
+    R = R.flatten()
 
     # Create a resolution mask
     if resolution is not None:
-        mask = R < 1.0 / resolution
+        mask = R < 1.0 / resolution ** 2
         X = X[mask]
         Y = Y[mask]
         R = R[mask]
     else:
-        resolution = 1 / R.max()
+        resolution = 1 / sqrt(R.max())
 
-    # Scale R to number of bins
-    R = numpy.floor(nbins * R / R.max()).astype("int32")
+    # Multiply X and Y together
+    XX = numpy.abs(X) ** 2
+    YY = numpy.abs(Y) ** 2
+    XY = numpy.real(X * numpy.conj(Y))
 
-    # Compute local variance and covariance
-    N = numpy.bincount(R)
-    varX = numpy.bincount(R, numpy.abs(X) ** 2) / N
-    varY = numpy.bincount(R, numpy.abs(Y) ** 2) / N
-    covXY = numpy.bincount(R, numpy.real(X * numpy.conj(Y))) / N
+    # Compute local variance and covariance either by binning with resolution
+    # or by computing a running mean
+    # if nbins is not None and nbins > 0:
+    bin_index = numpy.floor(nbins * R * resolution ** 2).astype("int32")
+    varX = numpy.bincount(bin_index, XX)
+    varY = numpy.bincount(bin_index, YY)
+    covXY = numpy.bincount(bin_index, XY)
+    bins = (1 / resolution ** 2) * numpy.arange(1, covXY.size + 1) / (covXY.size)
+    # else:
+    #     bins = (1 / resolution ** 2) * numpy.arange(1, 20 + 1) / (20)
+    #     d = bins[1] - bins[0]
+    #     s = (d/2)**2 / (2*log(2))
+    #     varX = numpy.zeros(bins.size)
+    #     varY = numpy.zeros(bins.size)
+    #     covXY = numpy.zeros(bins.size)
+    #     for i in range(len(bins)):
+    #         weight = numpy.exp(-0.5*(R - bins[i])**2 / s)
+    #         varX[i] = numpy.sum(weight * XX)
+    #         varY[i] = numpy.sum(weight * YY)
+    #         covXY[i] = numpy.sum(weight * XY)
+    #     # index = numpy.argsort(R)
+    #     # XX = XX[index]
+    #     # YY = YY[index]
+    #     # XY = XY[index]
+    #     # weights = numpy.repeat(1.0, XX.size // 20)
+    #     # varX = scipy.signal.fftconvolve(XX, weights, mode="same")
+    #     # varY = scipy.signal.fftconvolve(YY, weights, mode="same")
+    #     # covXY = scipy.signal.fftconvolve(XY, weights, mode="same")
+    #     # bins = R[index]
+    #     bins[0] = bins[1] / 2.0
 
     # Compute the FSC
-    fsc = numpy.zeros(covXY.shape)
     tiny = 1e-5
     mask = (varX > tiny) & (varY > tiny)
+    fsc = numpy.zeros(covXY.shape)
     fsc[mask] = covXY[mask] / (numpy.sqrt(varX[mask]) * numpy.sqrt(varY[mask]))
 
     # Print some output
     logger.info("Resolution, FSC")
-    bins = []
-    for i in range(len(fsc)):
-        step = (1.0 / resolution) / (nbins + 1)
-        bins.append(((i + 1) * step))
-        logger.info("%.2f, %.2f" % (1 / bins[i], fsc[i]))
+    for b, f in zip(bins, fsc):
+        logger.info("%.2f, %.2f" % (1 / sqrt(b), f))
 
     # Return the fsc
     return bins, fsc
 
 
 def mapfile_fsc(
-    input_filename1, input_filename2, output_filename=None, nbins=20, resolution=None
+    input_filename1,
+    input_filename2,
+    output_filename=None,
+    nbins=20,
+    resolution=None,
+    axes=None,
 ):
     """
     Compute the local FSC of the map
@@ -100,6 +147,7 @@ def mapfile_fsc(
         output_filename (str): The output map filename
         nbins (int): The number of bins
         resolution (float): The resolution limit
+        axes (tuple): The axes of the plane to compute the FSC
 
     """
 
@@ -112,19 +160,33 @@ def mapfile_fsc(
     data2 = infile2.data
 
     # Reorder data2 to match data1
-    data2 = reorder(data2, read_axis_order(infile2), read_axis_order(infile1))
+    axis_order1 = read_axis_order(infile1)
+    axis_order2 = read_axis_order(infile2)
+    data2 = reorder(data2, axis_order2, axis_order1)
+
+    # Reorder the axes to be in axis1 order
+    if axes is not None:
+        axes = tuple(axis_order1.index(a) for a in axes)
 
     # Compute the FSC
     bins, fsc = array_fsc(
-        data1, data2, voxel_size=infile1.voxel_size, nbins=nbins, resolution=resolution
+        data1,
+        data2,
+        voxel_size=infile1.voxel_size,
+        nbins=nbins,
+        resolution=resolution,
+        axes=axes,
     )
 
     # Write the FSC curve
     fig, ax = pylab.subplots(figsize=(8, 6))
     ax.plot(bins, fsc)
-    ax.set_xlabel("Resolution 1/A")
+    ax.set_xlabel("Resolution (A)")
     ax.set_ylabel("FSC")
     ax.set_ylim(0, 1)
+    ax.xaxis.set_major_formatter(
+        ticker.FuncFormatter(lambda x, p: "%.1f" % (1 / sqrt(x)) if x > 0 else None)
+    )
     fig.savefig(output_filename, dpi=300, bbox_inches="tight")
 
 

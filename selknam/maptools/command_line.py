@@ -98,6 +98,7 @@ def fsc(args):
         output_filename=args.output,
         nbins=args.nbins,
         resolution=args.resolution,
+        axes=args.axes,
     )
 
 
@@ -450,8 +451,6 @@ def main(args=None):
             default=20,
             help="The number of FSC bins",
         )
-
-        # Add some arguments
         parser_fsc.add_argument(
             "-r",
             "--resolution",
@@ -459,6 +458,14 @@ def main(args=None):
             type=float,
             default=None,
             help="The resolution to compute to",
+        )
+        parser_fsc.add_argument(
+            "-p",
+            "--axes",
+            dest="axes",
+            type=lambda s: [int(x) for x in s.split(",")],
+            default=None,
+            help="The axes in which to compute the FSC",
         )
 
     def add_fsc3d_arguments(subparsers, parser_common):
