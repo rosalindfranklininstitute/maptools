@@ -92,28 +92,6 @@ def array_fsc(
     varY = numpy.bincount(bin_index, YY)
     covXY = numpy.bincount(bin_index, XY)
     bins = (1 / resolution ** 2) * numpy.arange(1, covXY.size + 1) / (covXY.size)
-    # else:
-    #     bins = (1 / resolution ** 2) * numpy.arange(1, 20 + 1) / (20)
-    #     d = bins[1] - bins[0]
-    #     s = (d/2)**2 / (2*log(2))
-    #     varX = numpy.zeros(bins.size)
-    #     varY = numpy.zeros(bins.size)
-    #     covXY = numpy.zeros(bins.size)
-    #     for i in range(len(bins)):
-    #         weight = numpy.exp(-0.5*(R - bins[i])**2 / s)
-    #         varX[i] = numpy.sum(weight * XX)
-    #         varY[i] = numpy.sum(weight * YY)
-    #         covXY[i] = numpy.sum(weight * XY)
-    #     # index = numpy.argsort(R)
-    #     # XX = XX[index]
-    #     # YY = YY[index]
-    #     # XY = XY[index]
-    #     # weights = numpy.repeat(1.0, XX.size // 20)
-    #     # varX = scipy.signal.fftconvolve(XX, weights, mode="same")
-    #     # varY = scipy.signal.fftconvolve(YY, weights, mode="same")
-    #     # covXY = scipy.signal.fftconvolve(XY, weights, mode="same")
-    #     # bins = R[index]
-    #     bins[0] = bins[1] / 2.0
 
     # Compute the FSC
     tiny = 1e-5
