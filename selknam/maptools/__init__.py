@@ -9,11 +9,14 @@
 from selknam.maptools.cc import cc
 from selknam.maptools.crop import crop
 from selknam.maptools.edit import edit
-from selknam.maptools.filter import filter
 from selknam.maptools.fft import fft
+from selknam.maptools.filter import filter
+from selknam.maptools.fit import fit
 from selknam.maptools.fsc import fsc
 from selknam.maptools.fsc3d import fsc3d
+from selknam.maptools.map2mtz import map2mtz
 from selknam.maptools.mask import mask
+from selknam.maptools.pdb2map import pdb2map
 from selknam.maptools.rebin import rebin
 from selknam.maptools.reorder import reorder
 from selknam.maptools.rescale import rescale
@@ -25,11 +28,14 @@ __all__ = [
     "cc",
     "crop",
     "edit",
-    "filter",
     "fft",
+    "filter",
+    "fit",
     "fsc",
     "fsc3d",
+    "map2mtz",
     "mask",
+    "pdb2map",
     "rebin",
     "reorder",
     "rescale",

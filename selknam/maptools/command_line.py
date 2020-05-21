@@ -50,6 +50,23 @@ def edit(args):
     selknam.maptools.edit(input_filename=args.input, voxel_size=args.voxel_size)
 
 
+def fft(args):
+    """
+    Compute the map fft
+
+    Args:
+        args (object): The parsed arguments
+
+    """
+    selknam.maptools.fft(
+        input_filename=args.input,
+        output_filename=args.output,
+        mode=args.mode,
+        shift=args.shift,
+        normalize=args.normalize,
+    )
+
+
 def filter(args):
     """
     Filter the map
@@ -67,20 +84,22 @@ def filter(args):
     )
 
 
-def fft(args):
+def fit(args):
     """
-    Compute the map fft
+    Compute the map fit
 
     Args:
         args (object): The parsed arguments
 
     """
-    selknam.maptools.fft(
-        input_filename=args.input,
-        output_filename=args.output,
+    selknam.maptools.fit(
+        input_map_filename=args.input,
+        input_pdb_filename=args.input2,
+        output_pdb_filename=args.output,
+        resolution=args.resolution,
+        ncycle=args.ncycle,
         mode=args.mode,
-        shift=args.shift,
-        normalize=args.normalize,
+        log_filename=args.logfile,
     )
 
 
@@ -119,6 +138,21 @@ def fsc3d(args):
     )
 
 
+def map2mtz(args):
+    """
+    Convert the map to an mtz file
+
+    Args:
+        args (object): The parsed arguments
+
+    """
+    selknam.maptools.map2mtz(
+        input_filename=args.input,
+        output_filename=args.output,
+        resolution=args.resolution,
+    )
+
+
 def mask(args):
     """
     Mask the map
@@ -133,6 +167,22 @@ def mask(args):
         mask_filename=args.mask,
         fourier_space=args.fourier_space,
         shift=args.shift,
+    )
+
+
+def pdb2map(args):
+    """
+    Convert the pdb file into a map file
+
+    Args:
+        args (object): The parsed arguments
+
+    """
+    selknam.maptools.pdb2map(
+        input_filename=args.input,
+        output_filename=args.output,
+        resolution=args.resolution,
+        grid=args.grid,
     )
 
 
@@ -322,6 +372,52 @@ def main(args=None):
             help="The voxel size (sz, sy, sx)",
         )
 
+    def add_fft_arguments(subparsers, parser_common):
+        """
+        Add command line arguments for the fft command
+
+        """
+
+        # Create the parser for the "fft" command
+        parser_fft = subparsers.add_parser(
+            "fft", parents=[parser_common], help="Compute map FFT"
+        )
+
+        # Add some arguments
+        parser_fft.add_argument(
+            "-o",
+            "--output",
+            dest="output",
+            type=str,
+            default="fft.mrc",
+            help="The output map file",
+        )
+        parser_fft.add_argument(
+            "-m",
+            "--mode",
+            dest="mode",
+            type=str,
+            choices=["real", "imaginary", "amplitude", "phase", "power"],
+            default="power",
+            help="The fft output",
+        )
+        parser_fft.add_argument(
+            "-s",
+            "--shift",
+            dest="shift",
+            type=bool,
+            default=True,
+            help="Shift the Fourier components",
+        )
+        parser_fft.add_argument(
+            "-n",
+            "--normalize",
+            dest="normalize",
+            type=bool,
+            default=True,
+            help="Normalize before computing FFT",
+        )
+
     def add_filter_arguments(subparsers, parser_common):
         """
         Add command line arguments for the filter command
@@ -369,19 +465,32 @@ def main(args=None):
             help="The shape of the filter",
         )
 
-    def add_fft_arguments(subparsers, parser_common):
+    def add_fit_arguments(subparsers, parser_common):
         """
-        Add command line arguments for the fft command
+        Add command line arguments for the fit command
 
         """
 
         # Create the parser for the "fft" command
-        parser_fft = subparsers.add_parser(
-            "fft", parents=[parser_common], help="Compute map FFT"
+        parser_fit = subparsers.add_parser(
+            "fit",
+            parents=[parser_common],
+            help="Fit the coords into the map (requires REFMAC5)",
         )
 
         # Add some arguments
-        parser_fft.add_argument(
+        parser_fit.add_argument(
+            "-i2",
+            "--input2",
+            dest="input2",
+            type=str,
+            default=None,
+            required=True,
+            help="The input coordinate file",
+        )
+
+        # Add some arguments
+        parser_fit.add_argument(
             "-o",
             "--output",
             dest="output",
@@ -389,30 +498,38 @@ def main(args=None):
             default="fft.mrc",
             help="The output map file",
         )
-        parser_fft.add_argument(
+        parser_fit.add_argument(
+            "-r",
+            "--resolution",
+            dest="resolution",
+            type=float,
+            default=1,
+            help="The resolution",
+        )
+        parser_fit.add_argument(
+            "-n",
+            "--ncycle",
+            dest="ncycle",
+            type=int,
+            default=10,
+            help="The number of refinement cycles",
+        )
+        parser_fit.add_argument(
             "-m",
             "--mode",
             dest="mode",
             type=str,
-            choices=["real", "imaginary", "amplitude", "phase", "power"],
-            default="power",
-            help="The fft output",
+            choices=["rigid_body", "jelly_body"],
+            default="rigid_body",
+            help="The refinement mode",
         )
-        parser_fft.add_argument(
-            "-s",
-            "--shift",
-            dest="shift",
-            type=bool,
-            default=True,
-            help="Shift the Fourier components",
-        )
-        parser_fft.add_argument(
-            "-n",
-            "--normalize",
-            dest="normalize",
-            type=bool,
-            default=True,
-            help="Normalize before computing FFT",
+        parser_fit.add_argument(
+            "-l",
+            "--logfile",
+            dest="logfile",
+            type=str,
+            default="fit.log",
+            help="Destination for the log file",
         )
 
     def add_fsc_arguments(subparsers, parser_common):
@@ -559,6 +676,76 @@ def main(args=None):
             type=bool,
             default=False,
             help="Shift the mask",
+        )
+
+    def add_map2mtz_arguments(subparsers, parser_common):
+        """
+        Add command line arguments for the reorder map2mtz command
+
+        """
+
+        # Create the parser for the "reorder" command
+        parser_map2mtz = subparsers.add_parser(
+            "map2mtz",
+            parents=[parser_common],
+            help="Convert the map to an mtz file (requires REFMAC5)",
+        )
+
+        # Add some arguments
+        parser_map2mtz.add_argument(
+            "-o",
+            "--output",
+            dest="output",
+            type=str,
+            default="hklout.mtz",
+            help="The output mtz file",
+        )
+        parser_map2mtz.add_argument(
+            "-r",
+            "--resolution",
+            dest="resolution",
+            type=float,
+            default=1,
+            help="The resolution",
+        )
+
+    def add_pdb2map_arguments(subparsers, parser_common):
+        """
+        Add command line arguments for the reorder pdb2map command
+
+        """
+
+        # Create the parser for the "reorder" command
+        parser_pdb2map = subparsers.add_parser(
+            "pdb2map",
+            parents=[parser_common],
+            help="Convert the pdb to map file (requires REFMAC5 and FFT)",
+        )
+
+        # Add some arguments
+        parser_pdb2map.add_argument(
+            "-o",
+            "--output",
+            dest="output",
+            type=str,
+            default="output.mrc",
+            help="The output map file",
+        )
+        parser_pdb2map.add_argument(
+            "-r",
+            "--resolution",
+            dest="resolution",
+            type=float,
+            default=None,
+            help="The resolution",
+        )
+        parser_pdb2map.add_argument(
+            "-g",
+            "--grid",
+            dest="grid",
+            type=lambda s: [int(x) for x in s.split(",")],
+            default=None,
+            help="The grid",
         )
 
     def add_reorder_arguments(subparsers, parser_common):
@@ -833,8 +1020,9 @@ def main(args=None):
     add_cc_arguments(subparsers, parser_common)
     add_crop_arguments(subparsers, parser_common)
     add_edit_arguments(subparsers, parser_common)
-    add_filter_arguments(subparsers, parser_common)
     add_fft_arguments(subparsers, parser_common)
+    add_filter_arguments(subparsers, parser_common)
+    add_fit_arguments(subparsers, parser_common)
     add_fsc_arguments(subparsers, parser_common)
     add_fsc3d_arguments(subparsers, parser_common)
     add_mask_arguments(subparsers, parser_common)
@@ -844,6 +1032,8 @@ def main(args=None):
     add_rotate_arguments(subparsers, parser_common)
     add_threshold_arguments(subparsers, parser_common)
     add_transform_arguments(subparsers, parser_common)
+    add_map2mtz_arguments(subparsers, parser_common)
+    add_pdb2map_arguments(subparsers, parser_common)
 
     # Parse some argument lists
     args = parser.parse_args(args=args)
@@ -863,11 +1053,14 @@ def main(args=None):
         "cc": cc,
         "crop": crop,
         "edit": edit,
-        "filter": filter,
         "fft": fft,
+        "filter": filter,
+        "fit": fit,
         "fsc": fsc,
         "fsc3d": fsc3d,
+        "map2mtz": map2mtz,
         "mask": mask,
+        "pdb2map": pdb2map,
         "reorder": reorder,
         "threshold": threshold,
         "rebin": rebin,
