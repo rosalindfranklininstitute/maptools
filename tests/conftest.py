@@ -15,3 +15,8 @@ def rec_map_filename():
 @pytest.fixture
 def mask_filename():
     return os.path.join(os.path.dirname(__file__), "mask.mrc")
+
+
+@pytest.fixture
+def pdb_filename():
+    return os.path.join(os.path.dirname(__file__), "4v1w.pdb")

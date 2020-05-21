@@ -27,8 +27,8 @@ def map2mtz(input_filename, output_filename=None, resolution=1):
 
     """
     selknam.maptools.external.map2mtz(
-        mapin=os.path.abs(input_filename),
-        hklout=os.path.abs(output_filename),
+        mapin=os.path.abspath(input_filename),
+        hklout=os.path.abspath(output_filename),
         resolution=resolution,
         wd=tempfile.mkdtemp(),
         stdout=None,
