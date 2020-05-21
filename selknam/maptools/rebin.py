@@ -27,6 +27,9 @@ def array_rebin(data, shape):
 
     # Ensure dimensions are consistent
     assert data.ndim == len(shape)
+    assert data.shape[0] % shape[0] == 0
+    assert data.shape[1] % shape[1] == 0
+    assert data.shape[2] % shape[2] == 0
 
     # Get pairs of (shape, bin factor) for each dimension
     factors = numpy.array([(d, c // d) for d, c in zip(shape, data.shape)])
@@ -60,7 +63,14 @@ def mapfile_rebin(input_filename, output_filename, shape=None):
     data = array_rebin(data, shape)
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    outfile = write(output_filename, data, infile=infile)
+
+    # Update the voxel size
+    outfile.voxel_size = (
+        outfile.voxel_size["z"] * data.shape[0] // shape[0],
+        outfile.voxel_size["y"] * data.shape[1] // shape[1],
+        outfile.voxel_size["x"] * data.shape[2] // shape[2],
+    )
 
 
 def rebin(*args, **kwargs):
