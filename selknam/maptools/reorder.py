@@ -33,6 +33,9 @@ def array_reorder(data, original_order, new_order):
         x[a], x[b] = x[b], x[a]
         return x
 
+    # Convert to list
+    original_order = list(original_order)
+
     # Reorder the axes
     index = original_order.index(new_order[0])
     if index != 0:
