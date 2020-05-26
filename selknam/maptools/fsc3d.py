@@ -99,8 +99,9 @@ def mapfile_fsc3d(
     data1 = infile1.data
     data2 = infile2.data
 
-    # Reorder data2 to match data1
-    data2 = reorder(data2, read_axis_order(infile2), read_axis_order(infile1))
+    # Reorder input arrays
+    data1 = reorder(data1, read_axis_order(infile1), (0, 1, 2))
+    data2 = reorder(data2, read_axis_order(infile2), (0, 1, 2))
 
     # Compute the local FSC
     fsc = fsc3d(
@@ -110,6 +111,9 @@ def mapfile_fsc3d(
         resolution=resolution,
         voxel_size=infile1.voxel_size,
     )
+
+    # Reorder output array
+    fsc = reorder(fsc, (0, 1, 2), read_axis_order(infile1))
 
     # Write the output file
     write(output_filename, fsc.astype("float32"), infile=infile1)
