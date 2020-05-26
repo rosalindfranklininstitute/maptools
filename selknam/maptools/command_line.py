@@ -252,6 +252,21 @@ def rotate(args):
     )
 
 
+def segment(args):
+    """
+    Segment the map
+
+    Args:
+        args (object): The parsed arguments
+
+    """
+    selknam.maptools.segment(
+        input_filename=args.input,
+        output_filename=args.output,
+        num_objects=args.num_objects,
+    )
+
+
 def threshold(args):
     """
     Threshold the map
@@ -906,6 +921,35 @@ def main(args=None):
             help="The number of times to rotate by 90 degrees",
         )
 
+    def add_segment_arguments(subparsers, parser_common):
+        """
+        Add command line arguments for the segment command
+
+        """
+
+        # Create the parser for the "segment" command
+        parser_segment = subparsers.add_parser(
+            "segment", parents=[parser_common], help="Threshold the map"
+        )
+
+        # Add some arguments
+        parser_segment.add_argument(
+            "-o",
+            "--output",
+            dest="output",
+            type=str,
+            default="segmented.mrc",
+            help="The output map file",
+        )
+        parser_segment.add_argument(
+            "-n",
+            "--num_objects",
+            dest="num_objects",
+            type=int,
+            default=1,
+            help="The number of objects",
+        )
+
     def add_threshold_arguments(subparsers, parser_common):
         """
         Add command line arguments for the threshold command
@@ -1048,6 +1092,7 @@ def main(args=None):
     add_rebin_arguments(subparsers, parser_common)
     add_rescale_arguments(subparsers, parser_common)
     add_rotate_arguments(subparsers, parser_common)
+    add_segment_arguments(subparsers, parser_common)
     add_threshold_arguments(subparsers, parser_common)
     add_transform_arguments(subparsers, parser_common)
     add_map2mtz_arguments(subparsers, parser_common)
@@ -1080,6 +1125,7 @@ def main(args=None):
         "mask": mask,
         "pdb2map": pdb2map,
         "reorder": reorder,
+        "segment": segment,
         "threshold": threshold,
         "rebin": rebin,
         "rescale": rescale,

@@ -21,6 +21,7 @@ from selknam.maptools.rebin import rebin
 from selknam.maptools.reorder import reorder
 from selknam.maptools.rescale import rescale
 from selknam.maptools.rotate import rotate
+from selknam.maptools.segment import segment
 from selknam.maptools.threshold import threshold
 from selknam.maptools.transform import transform
 
@@ -40,6 +41,7 @@ __all__ = [
     "reorder",
     "rescale",
     "rotate",
+    "segment",
     "threshold",
     "transform",
 ]
