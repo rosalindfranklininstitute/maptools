@@ -115,9 +115,11 @@ def fsc(args):
         input_filename1=args.input,
         input_filename2=args.input2,
         output_filename=args.output,
+        output_data_filename=args.output_data,
         nbins=args.nbins,
         resolution=args.resolution,
-        axes=args.axes,
+        axis=args.axis,
+        method=args.method,
     )
 
 
@@ -553,6 +555,14 @@ def main(args=None):
             help="The output fsc curvae",
         )
         parser_fsc.add_argument(
+            "-d",
+            "--output_data",
+            dest="output_data",
+            type=str,
+            default="fsc.yaml",
+            help="The output file for the data table",
+        )
+        parser_fsc.add_argument(
             "-i2",
             "--input2",
             dest="input2",
@@ -577,12 +587,20 @@ def main(args=None):
             help="The resolution to compute to",
         )
         parser_fsc.add_argument(
-            "-p",
-            "--axes",
-            dest="axes",
+            "--axis",
+            dest="axis",
             type=lambda s: [int(x) for x in s.split(",")],
             default=None,
             help="The axes in which to compute the FSC",
+        )
+        parser_fsc.add_argument(
+            "-m",
+            "--method",
+            dest="method",
+            type=str,
+            default="binned",
+            choices=["binned", "averaged"],
+            help="The method to use to calculate FSC",
         )
 
     def add_fsc3d_arguments(subparsers, parser_common):
