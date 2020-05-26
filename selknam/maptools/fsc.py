@@ -224,6 +224,7 @@ def mapfile_fsc(
         ticker.FuncFormatter(lambda x, p: "%.1f" % (1 / sqrt(x)) if x > 0 else None)
     )
     fig.savefig(output_filename, dpi=300, bbox_inches="tight")
+    pylab.close(fig)
 
     # Write a data file
     if output_data_filename is not None:
