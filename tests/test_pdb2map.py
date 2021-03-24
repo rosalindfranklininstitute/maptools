@@ -1,13 +1,13 @@
 import os.path
 import tempfile
-import selknam.maptools
+import maptools
 
 
 def test_pdb2map(pdb_filename):
 
     _, output_filename = tempfile.mkstemp()
 
-    selknam.maptools.pdb2map(
+    maptools.pdb2map(
         input_filename=pdb_filename,
         output_filename=output_filename,
         resolution=8,

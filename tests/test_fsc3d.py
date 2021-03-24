@@ -1,6 +1,6 @@
 import os.path
 import tempfile
-import selknam.maptools
+import maptools
 
 
 def test_fsc3d(ideal_map_filename, rec_map_filename):
@@ -9,7 +9,7 @@ def test_fsc3d(ideal_map_filename, rec_map_filename):
 
         _, output_filename = tempfile.mkstemp()
 
-        selknam.maptools.fsc3d(
+        maptools.fsc3d(
             input_filename1=ideal_map_filename,
             input_filename2=rec_map_filename,
             output_filename=output_filename,

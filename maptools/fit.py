@@ -9,8 +9,8 @@
 import logging
 import os
 import tempfile
-import selknam.maptools.external
-from selknam.maptools.util import read
+import maptools.external
+from maptools.util import read
 
 
 # Get the logger
@@ -51,7 +51,7 @@ def fit(
     with open(log_filename, "w") as stdout:
 
         # Call refmac to convert map to mtz
-        selknam.maptools.external.map2mtz(
+        maptools.external.map2mtz(
             mapin=os.path.abspath(input_map_filename),
             hklout="input.mtz",
             resolution=resolution,
@@ -62,7 +62,7 @@ def fit(
         )
 
         # Setup the pdb file
-        selknam.maptools.external.pdbset(
+        maptools.external.pdbset(
             xyzin=os.path.abspath(input_pdb_filename),
             xyzout="pdbset.pdb",
             cell=tuple(grid),
@@ -73,7 +73,7 @@ def fit(
         )
 
         # Setup the pdb file
-        selknam.maptools.external.refine(
+        maptools.external.refine(
             xyzin="pdbset.pdb",
             hklin="input.mtz",
             xyzout=os.path.abspath(output_pdb_filename),

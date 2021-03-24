@@ -9,7 +9,7 @@
 import logging
 import os
 import tempfile
-import selknam.maptools.external
+import maptools.external
 
 
 # Get the logger
@@ -31,7 +31,7 @@ def pdb2map(input_filename, output_filename=None, resolution=1, grid=None):
     wd = tempfile.mkdtemp()
 
     # Setup the pdb file
-    selknam.maptools.external.pdbset(
+    maptools.external.pdbset(
         xyzin=os.path.abspath(input_filename),
         xyzout="pdbset.pdb",
         cell=tuple(grid),
@@ -42,7 +42,7 @@ def pdb2map(input_filename, output_filename=None, resolution=1, grid=None):
     )
 
     # Generate an mtz file from a pdb file using refmac
-    selknam.maptools.external.pdb2mtz(
+    maptools.external.pdb2mtz(
         xyzin="pdbset.pdb",
         hklout="hklout.mtz",
         resolution=resolution,
@@ -53,7 +53,7 @@ def pdb2map(input_filename, output_filename=None, resolution=1, grid=None):
     )
 
     # Convert the mtz file to an mrc file
-    selknam.maptools.external.mtz2map(
+    maptools.external.mtz2map(
         hklin="hklout.mtz",
         mapout=os.path.abspath(output_filename),
         grid=tuple(grid),

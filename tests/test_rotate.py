@@ -1,6 +1,6 @@
 import os.path
 import tempfile
-import selknam.maptools
+import maptools
 
 
 def test_rotate(ideal_map_filename):
@@ -9,7 +9,7 @@ def test_rotate(ideal_map_filename):
 
         _, output_filename = tempfile.mkstemp()
 
-        selknam.maptools.rotate(
+        maptools.rotate(
             input_filename=ideal_map_filename,
             output_filename=output_filename,
             axes=axes,

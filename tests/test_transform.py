@@ -1,13 +1,13 @@
 import os.path
 import tempfile
-import selknam.maptools
+import maptools
 
 
 def test_transform(ideal_map_filename):
 
     _, output_filename = tempfile.mkstemp()
 
-    selknam.maptools.transform(
+    maptools.transform(
         input_filename=ideal_map_filename,
         output_filename=output_filename,
         offset=None,

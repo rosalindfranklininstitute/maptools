@@ -8,7 +8,7 @@
 #
 import argparse
 import logging
-import selknam.maptools
+import maptools
 
 
 def cc(args):
@@ -19,7 +19,7 @@ def cc(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.cc(
+    maptools.cc(
         input_filename1=args.input,
         input_filename2=args.input2,
         output_filename=args.output,
@@ -34,7 +34,7 @@ def crop(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.crop(
+    maptools.crop(
         input_filename=args.input, output_filename=args.output, roi=args.roi
     )
 
@@ -47,7 +47,7 @@ def edit(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.edit(input_filename=args.input, voxel_size=args.voxel_size)
+    maptools.edit(input_filename=args.input, voxel_size=args.voxel_size)
 
 
 def fft(args):
@@ -58,7 +58,7 @@ def fft(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.fft(
+    maptools.fft(
         input_filename=args.input,
         output_filename=args.output,
         mode=args.mode,
@@ -75,7 +75,7 @@ def filter(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.filter(
+    maptools.filter(
         input_filename=args.input,
         output_filename=args.output,
         filter_type=args.type,
@@ -92,7 +92,7 @@ def fit(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.fit(
+    maptools.fit(
         input_map_filename=args.input,
         input_pdb_filename=args.input2,
         output_pdb_filename=args.output,
@@ -111,7 +111,7 @@ def fsc(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.fsc(
+    maptools.fsc(
         input_filename1=args.input,
         input_filename2=args.input2,
         output_filename=args.output,
@@ -131,7 +131,7 @@ def fsc3d(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.fsc3d(
+    maptools.fsc3d(
         input_filename1=args.input,
         input_filename2=args.input2,
         output_filename=args.output,
@@ -148,7 +148,7 @@ def map2mtz(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.map2mtz(
+    maptools.map2mtz(
         input_filename=args.input,
         output_filename=args.output,
         resolution=args.resolution,
@@ -163,7 +163,7 @@ def mask(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.mask(
+    maptools.mask(
         input_filename=args.input,
         output_filename=args.output,
         mask_filename=args.mask,
@@ -180,7 +180,7 @@ def pdb2map(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.pdb2map(
+    maptools.pdb2map(
         input_filename=args.input,
         output_filename=args.output,
         resolution=args.resolution,
@@ -196,7 +196,7 @@ def reorder(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.reorder(
+    maptools.reorder(
         input_filename=args.input,
         output_filename=args.output,
         axis_order=args.axis_order,
@@ -211,7 +211,7 @@ def rebin(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.rebin(
+    maptools.rebin(
         input_filename=args.input, output_filename=args.output, shape=args.shape
     )
 
@@ -224,7 +224,7 @@ def rescale(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.rescale(
+    maptools.rescale(
         input_filename=args.input,
         output_filename=args.output,
         mean=args.mean,
@@ -244,7 +244,7 @@ def rotate(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.rotate(
+    maptools.rotate(
         input_filename=args.input,
         output_filename=args.output,
         axes=args.axes,
@@ -260,7 +260,7 @@ def segment(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.segment(
+    maptools.segment(
         input_filename=args.input,
         output_filename=args.output,
         num_objects=args.num_objects,
@@ -275,7 +275,7 @@ def threshold(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.threshold(
+    maptools.threshold(
         input_filename=args.input,
         output_filename=args.output,
         threshold=args.threshold,
@@ -292,7 +292,7 @@ def transform(args):
         args (object): The parsed arguments
 
     """
-    selknam.maptools.transform(
+    maptools.transform(
         input_filename=args.input,
         output_filename=args.output,
         offset=args.offset,

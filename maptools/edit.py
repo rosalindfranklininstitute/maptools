@@ -7,7 +7,7 @@
 # which is included in the root directory of this package.
 #
 import logging
-from selknam.maptools.util import read
+from maptools.util import read
 
 
 # Get the logger

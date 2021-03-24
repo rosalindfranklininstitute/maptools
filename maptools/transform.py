@@ -11,7 +11,7 @@ import numpy
 import scipy.ndimage
 import scipy.spatial.transform
 from math import pi
-from selknam.maptools.util import read, write, read_axis_order
+from maptools.util import read, write, read_axis_order
 
 
 # Get the logger

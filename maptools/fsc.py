@@ -11,8 +11,8 @@ import numpy
 import scipy.ndimage
 import yaml
 from matplotlib import pylab, ticker
-from selknam.maptools.util import read, read_axis_order
-from selknam.maptools.reorder import reorder
+from maptools.util import read, read_axis_order
+from maptools.reorder import reorder
 from math import sqrt
 
 

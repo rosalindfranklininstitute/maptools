@@ -9,7 +9,7 @@
 import logging
 import os
 import tempfile
-import selknam.maptools.external
+import maptools.external
 
 
 # Get the logger
@@ -26,7 +26,7 @@ def map2mtz(input_filename, output_filename=None, resolution=1):
         resolution (float): The resolution
 
     """
-    selknam.maptools.external.map2mtz(
+    maptools.external.map2mtz(
         mapin=os.path.abspath(input_filename),
         hklout=os.path.abspath(output_filename),
         resolution=resolution,

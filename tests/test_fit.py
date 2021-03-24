@@ -1,6 +1,6 @@
 import os.path
 import tempfile
-import selknam.maptools
+import maptools
 
 
 def test_fit(ideal_map_filename, pdb_filename):
@@ -8,7 +8,7 @@ def test_fit(ideal_map_filename, pdb_filename):
     _, output_filename = tempfile.mkstemp()
     _, log_filename = tempfile.mkstemp()
 
-    selknam.maptools.fit(
+    maptools.fit(
         input_map_filename=ideal_map_filename,
         input_pdb_filename=pdb_filename,
         output_pdb_filename=output_filename,

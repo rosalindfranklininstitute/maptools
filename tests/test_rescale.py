@@ -1,6 +1,6 @@
 import os.path
 import tempfile
-import selknam.maptools
+import maptools
 
 
 def test_rescale(ideal_map_filename):
@@ -13,7 +13,7 @@ def test_rescale(ideal_map_filename):
 
         _, output_filename = tempfile.mkstemp()
 
-        selknam.maptools.rescale(
+        maptools.rescale(
             input_filename=ideal_map_filename,
             output_filename=output_filename,
             mean=mean,

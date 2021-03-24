@@ -1,1 +1,1 @@
-# selknam-maptools
+# maptools

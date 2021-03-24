@@ -18,12 +18,12 @@ def main():
     tests_require = ["pytest", "pytest-cov", "mock"]
 
     setup(
-        packages=["selknam.maptools"],
-        install_requires=["mrcfile"],
+        packages=["maptools"],
+        install_requires=["matplotlib", "mrcfile", "pyyaml", "scipy", "scikit-image"],
         setup_requires=["pytest-runner"],
         tests_require=tests_require,
         test_suite="tests",
-        entry_points={"console_scripts": ["map=selknam.maptools.command_line:main"]},
+        entry_points={"console_scripts": ["map=maptools.command_line:main"]},
         extras_require={
             "build_sphinx": ["sphinx", "sphinx_rtd_theme"],
             "test": tests_require,

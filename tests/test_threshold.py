@@ -1,6 +1,6 @@
 import os.path
 import tempfile
-import selknam.maptools
+import maptools
 
 
 def test_threshold(ideal_map_filename):
@@ -11,7 +11,7 @@ def test_threshold(ideal_map_filename):
 
             _, output_filename = tempfile.mkstemp()
 
-            selknam.maptools.threshold(
+            maptools.threshold(
                 input_filename=ideal_map_filename,
                 output_filename=output_filename,
                 threshold=0,

@@ -10,7 +10,7 @@ import logging
 import numpy
 import scipy.ndimage.measurements
 import skimage.filters
-from selknam.maptools.util import read, write
+from maptools.util import read, write
 
 
 # Get the logger
