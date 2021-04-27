@@ -10,7 +10,7 @@
 To install from the github repository do the following
 
 ```sh
-python -m pip install git+https://github.com/rosalindfranklininstitute/maptools.git@master#egg=maptools
+python -m pip install git+https://github.com/rosalindfranklininstitute/maptools.git@master
 ```
 
 To install from source, clone this repository. Then do the following:
