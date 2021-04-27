@@ -70,6 +70,10 @@ def array_fsc(
         array: The FSC
 
     """
+
+    # Check the voxel size
+    assert all(v > 0 for v in voxel_size)
+
     # Check the axis
     if type(axis) in [int, float]:
         axis = (axis,)
