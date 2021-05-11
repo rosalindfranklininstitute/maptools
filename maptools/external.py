@@ -14,6 +14,14 @@ import subprocess
 logger = logging.getLogger(__name__)
 
 
+def is_ccp4_available():
+    """
+    Check if CCP4 is available
+
+    """
+    return os.environ.get("CCP4", None) not in [ None, "" ]
+
+
 class cd:
     """
     Context manager for changing the current working directory
@@ -74,6 +82,11 @@ def call_ccp4(
     Call a CCP4 style program
 
     """
+
+    # Check if CCP4 is available
+    if not is_ccp4_available():
+        raise RuntimeError("CCP4 is not available")
+
     # Create the working directory
     if wd is None:
         wd = "."
