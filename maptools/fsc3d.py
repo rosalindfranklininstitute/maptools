@@ -9,8 +9,8 @@
 import logging
 import numpy
 import scipy.ndimage
-from selknam.maptools.util import read, write, read_axis_order
-from selknam.maptools.reorder import reorder
+from maptools.util import read, write, read_axis_order
+from maptools.reorder import reorder
 
 
 # Get the logger

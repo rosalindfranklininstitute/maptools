@@ -8,7 +8,7 @@
 #
 import logging
 import numpy
-from selknam.maptools.util import read, write
+from maptools.util import read, write
 
 
 # Get the logger
