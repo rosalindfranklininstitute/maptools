@@ -77,8 +77,8 @@ def array_rescale(
 
 
 def mapfile_rescale(
-    input_filename,
-    output_filename,
+    input_map_filename,
+    output_map_filename,
     mean=None,
     sdev=None,
     vmin=None,
@@ -90,8 +90,8 @@ def mapfile_rescale(
     Rescale the map
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
         mean (float): The desired mean value
         sdev (float): The desired sdev value
         vmin (float): The desired min value
@@ -102,7 +102,7 @@ def mapfile_rescale(
     """
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Get the data
     data = infile.data
@@ -113,7 +113,7 @@ def mapfile_rescale(
     )
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    write(output_map_filename, data, infile=infile)
 
 
 def rescale(*args, **kwargs):
@@ -121,7 +121,7 @@ def rescale(*args, **kwargs):
     Rescale the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
         func = mapfile_rescale
     else:
         func = array_rescale

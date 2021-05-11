@@ -265,7 +265,7 @@ def pdb2mtz(
             "source EM MB",
             "reso %f" % resolution,
             "sfcalc blur",
-            "make hydrogen no",
+            "bfactor set 10",
             "end",
         ],
         stdout=stdout,
@@ -384,7 +384,7 @@ def refine(
             "rigidbody ncycle %d" % ncycle,
             "BFACtor SET 40.0",
             "reso %f" % resolution,
-            "moni few",
+            "moni medi",
             "rigid auto all",
             "end",
         ]

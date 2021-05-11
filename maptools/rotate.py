@@ -16,20 +16,20 @@ from maptools.util import read, write
 logger = logging.getLogger(__name__)
 
 
-def rotate(input_filename, output_filename, axes=(0, 1), num=1):
+def rotate(input_map_filename, output_map_filename, axes=(0, 1), num=1):
     """
     Rotate the map
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
         axes (tuple): The axis to rotate around
         num (int): The number of times to rotate by 90 degrees
 
     """
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Get data
     data = infile.data.copy()
@@ -39,4 +39,4 @@ def rotate(input_filename, output_filename, axes=(0, 1), num=1):
     data = numpy.rot90(data, k=num, axes=axes)
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    write(output_map_filename, data, infile=infile)

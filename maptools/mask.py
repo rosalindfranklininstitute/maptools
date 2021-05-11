@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def array_mask(
-    data, mask, fourier_space=False, shift=False,
+    data, mask, value=0, zero=True, fourier_space=False, shift=False,
 ):
     """
     Mask the map
@@ -40,6 +40,11 @@ def array_mask(
     if not fourier_space:
         logger.info("Applying mask in real space")
         data = data * mask
+        # mask = mask > 0
+        # data = data * mask + (~mask) * value
+        # if zero:
+        #     masked_data = data[mask]
+        #     data[mask] = masked_data - numpy.min(masked_data) + value
     else:
         logger.info("Applying mask in Fourier space")
         data = numpy.real(numpy.fft.ifftn(numpy.fft.fftn(data) * mask))
@@ -49,9 +54,9 @@ def array_mask(
 
 
 def mapfile_mask(
-    input_filename,
-    output_filename,
-    mask_filename=None,
+    input_map_filename,
+    output_map_filename,
+    input_mask_filename=None,
     fourier_space=False,
     shift=False,
 ):
@@ -59,19 +64,19 @@ def mapfile_mask(
     Mask the map
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
-        mask_filename (str): The mask filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
+        input_mask_filename (str): The mask filename
         space (str): Apply in real space or fourier space
         shift (bool): Shift the mask
 
     """
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Open the mask file
-    maskfile = read(mask_filename)
+    maskfile = read(input_mask_filename)
 
     # Apply the mask
     data = infile.data
@@ -84,7 +89,7 @@ def mapfile_mask(
     data = array_mask(data, mask, fourier_space=fourier_space, shift=shift)
 
     # Write the output file
-    write(output_filename, data.astype("float32"), infile=infile)
+    write(output_map_filename, data.astype("float32"), infile=infile)
 
 
 def mask(*args, **kwargs):
@@ -92,7 +97,7 @@ def mask(*args, **kwargs):
     Mask the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
         func = mapfile_mask
     else:
         func = array_mask

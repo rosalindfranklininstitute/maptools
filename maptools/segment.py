@@ -10,6 +10,7 @@ import logging
 import numpy
 import scipy.ndimage.measurements
 import skimage.filters
+import maptools
 from maptools.util import read, write
 
 
@@ -52,28 +53,37 @@ def array_segment(data, num_objects=1):
     return result
 
 
-def mapfile_segment(input_filename, output_filename, num_objects=1):
+def mapfile_segment(
+    input_map_filename,
+    output_map_filename=None,
+    output_mask_filename=None,
+    num_objects=1,
+):
     """
     Segment the map
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
+        output_mask_filename (str): The output mask filename
         num_objects (int): The number of objects
 
     """
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Get data
-    data = infile.data.copy()
+    data = infile.data
 
-    # Apply the segment
-    data = array_segment(data, num_objects=num_objects)
+    # Segment the data
+    mask = array_segment(data, num_objects=num_objects)
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    if output_mask_filename is not None:
+        write(output_mask_filename, mask, infile=infile)
+    if output_map_filename is not None:
+        write(output_map_filename, maptools.mask(data, mask), infile=infile)
 
 
 def segment(*args, **kwargs):
@@ -81,7 +91,7 @@ def segment(*args, **kwargs):
     Segment the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
         func = mapfile_segment
     else:
         func = array_segment

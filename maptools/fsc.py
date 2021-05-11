@@ -70,10 +70,6 @@ def array_fsc(
         array: The FSC
 
     """
-
-    # Check the voxel size
-    assert all(v > 0 for v in voxel_size)
-
     # Check the axis
     if type(axis) in [int, float]:
         axis = (axis,)
@@ -88,6 +84,9 @@ def array_fsc(
         axis = tuple(set((0, 1, 2)).difference(axis))
         data1 = numpy.mean(data1, axis=axis)
         data2 = numpy.mean(data2, axis=axis)
+
+    # Check voxel size
+    voxel_size = tuple(v if v > 0 else 1 for v in voxel_size)
 
     # Normalize the data
     data1 = (data1 - numpy.mean(data1)) / numpy.std(data1)
@@ -133,14 +132,17 @@ def array_fsc(
     # Compute local variance and covariance by binning with resolution
     if method == "binned":
         bin_index = numpy.floor(nbins * R * resolution ** 2).astype("int32")
+        N = numpy.bincount(bin_index)
         varX = numpy.bincount(bin_index, XX)
         varY = numpy.bincount(bin_index, YY)
         covXY = numpy.bincount(bin_index, XY)
     elif method == "averaged":
         bin_index = numpy.floor((sum(shape) // 2) * R * resolution ** 2).astype("int32")
+        N = numpy.bincount(bin_index)
         varX = numpy.bincount(bin_index, XX)
         varY = numpy.bincount(bin_index, YY)
         covXY = numpy.bincount(bin_index, XY)
+        N = scipy.ndimage.uniform_filter(N, size=nbins, mode="nearest")
         varX = scipy.ndimage.uniform_filter(varX, size=nbins, mode="nearest")
         varY = scipy.ndimage.uniform_filter(varY, size=nbins, mode="nearest")
         covXY = scipy.ndimage.uniform_filter(covXY, size=nbins, mode="nearest")
@@ -160,13 +162,13 @@ def array_fsc(
         logger.info("%.2f, %.2f" % (1 / sqrt(b), f))
 
     # Return the fsc
-    return bins, fsc
+    return bins, N, fsc
 
 
 def mapfile_fsc(
-    input_filename1,
-    input_filename2,
-    output_filename=None,
+    input_map_filename1,
+    input_map_filename2,
+    output_plot_filename=None,
     output_data_filename=None,
     nbins=20,
     resolution=None,
@@ -177,9 +179,10 @@ def mapfile_fsc(
     Compute the local FSC of the map
 
     Args:
-        input_filename1 (str): The input map filename
-        input_filename2 (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename1 (str): The input map filename
+        input_map_filename2 (str): The input map filename
+        output_plot_filename (str): The output map filename
+        output_data_filename (str): The output data filename
         nbins (int): The number of bins
         resolution (float): The resolution limit
         axis (tuple): The axis of the plane to compute the FSC
@@ -187,12 +190,14 @@ def mapfile_fsc(
 
     """
     # Check the axis
-    if type(axis) in [int, float]:
-        axis = (axis,)
+    if axis is None or type(axis) == int:
+        axis = [axis]
+    elif axis[0] is None or type(axis[0]) == int:
+        axis = [axis]
 
     # Open the input files
-    infile1 = read(input_filename1)
-    infile2 = read(input_filename2)
+    infile1 = read(input_map_filename1)
+    infile2 = read(input_map_filename2)
 
     # Get the data
     data1 = infile1.data
@@ -202,52 +207,77 @@ def mapfile_fsc(
     data1 = reorder(data1, read_axis_order(infile1), (0, 1, 2))
     data2 = reorder(data2, read_axis_order(infile2), (0, 1, 2))
 
-    # Compute the FSC
-    bins, fsc = array_fsc(
-        data1,
-        data2,
-        voxel_size=tuple(infile1.voxel_size[a] for a in ["z", "y", "x"]),
-        nbins=nbins,
-        resolution=resolution,
-        axis=axis,
-        method=method,
-    )
+    # Loop through all axes
+    results = []
+    for current_axis in axis:
 
-    # Compute the resolution
-    bin_index, bin_value, fsc_value = resolution_from_fsc(bins, fsc)
-    logger.info("Estimated resolution = %f A" % (1 / sqrt(bin_value)))
+        # Compute the FSC
+        bins, num, fsc = array_fsc(
+            data1,
+            data2,
+            voxel_size=tuple(infile1.voxel_size[a] for a in ["z", "y", "x"]),
+            nbins=nbins,
+            resolution=resolution,
+            axis=current_axis,
+            method=method,
+        )
+
+        # Compute the FSC average
+        fsc_average = float(numpy.sum(num * fsc) / numpy.sum(num))
+        logger.info("FSC average: %g" % fsc_average)
+
+        # Compute the resolution
+        bin_index, bin_value, fsc_value = resolution_from_fsc(bins, fsc)
+        logger.info("Estimated resolution = %f A" % (1 / sqrt(bin_value)))
+
+        # Write the results dictionary
+        results.append(
+            {
+                "axis": current_axis,
+                "table": {"bin": list(map(float, bins)), "fsc": list(map(float, fsc)),},
+                "resolution": {
+                    "bin_index": int(bin_index),
+                    "bin_value": float(bin_value),
+                    "fsc_value": float(fsc_value),
+                    "estimate": float(1 / sqrt(bin_value)),
+                },
+                "fsc_average": fsc_average,
+            },
+        )
 
     # Write the FSC curve
-    fig, ax = pylab.subplots(figsize=(8, 6))
-    ax.plot(bins, fsc)
-    ax.set_xlabel("Resolution (A)")
-    ax.set_ylabel("FSC")
-    ax.set_ylim(0, 1)
-    ax.axvline(bin_value, color="black")
-    ax.xaxis.set_major_formatter(
-        ticker.FuncFormatter(lambda x, p: "%.1f" % (1 / sqrt(x)) if x > 0 else None)
-    )
-    fig.savefig(output_filename, dpi=300, bbox_inches="tight")
-    pylab.close(fig)
+    if output_plot_filename is not None:
+        fig, ax = pylab.subplots(figsize=(8, 6))
+        for r in results:
+            bins = r["table"]["bin"]
+            fsc = r["table"]["fsc"]
+            axis = r["axis"]
+            resolution = r["resolution"]["bin_value"]
+            if axis == None:
+                axis == (0, 1, 2)
+            ax.plot(r["table"]["bin"], r["table"]["fsc"], label="axis - %s" % str(axis))
+            ax.set_xlabel("Resolution (A)")
+            ax.set_ylabel("FSC")
+            ax.set_ylim(0, 1)
+            ax.axvline(resolution, color="black")
+            ax.xaxis.set_major_formatter(
+                ticker.FuncFormatter(
+                    lambda x, p: "%.1f" % (1 / sqrt(x)) if x > 0 else None
+                )
+            )
+        ax.legend()
+        fig.savefig(output_plot_filename, dpi=300, bbox_inches="tight")
+        pylab.close(fig)
 
     # Write a data file
     if output_data_filename is not None:
         with open(output_data_filename, "w") as outfile:
             yaml.safe_dump(
-                {
-                    "table": {
-                        "bin": list(map(float, bins)),
-                        "fsc": list(map(float, fsc)),
-                    },
-                    "resolution": {
-                        "bin_index": int(bin_index),
-                        "bin_value": float(bin_value),
-                        "fsc_value": float(fsc_value),
-                        "estimate": float(1 / sqrt(bin_value)),
-                    },
-                },
-                outfile,
+                results, outfile,
             )
+
+    # Return the results
+    return results
 
 
 def fsc(*args, **kwargs):
@@ -255,7 +285,7 @@ def fsc(*args, **kwargs):
     Compute the FSC of the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename1" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename1" in kwargs:
         func = mapfile_fsc
     else:
         func = array_fsc

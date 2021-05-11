@@ -42,7 +42,7 @@ def fit(
 
     # Read the grid from the map
     input_map_file = read(input_map_filename)
-    grid = input_map_file.data.shape
+    cell = tuple(input_map_file.header.cella.tolist())
 
     # Get a working directory
     wd = tempfile.mkdtemp()
@@ -65,7 +65,7 @@ def fit(
         maptools.external.pdbset(
             xyzin=os.path.abspath(input_pdb_filename),
             xyzout="pdbset.pdb",
-            cell=tuple(grid),
+            cell=cell,
             stdout=stdout,
             wd=wd,
             param_file="pdbset.dat",

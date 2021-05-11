@@ -34,23 +34,29 @@ def array_threshold(data, threshold=0, normalize=False, zero=True):
     logger.info("Apply threshold %f" % threshold)
     if normalize:
         data = (data - numpy.mean(data)) / numpy.std(data)
-    data[data < threshold] = threshold
+    mask = data >= threshold
+    data[~mask] = threshold
     if zero:
         data -= threshold
 
     # Return the data
-    return data
+    return data, mask
 
 
 def mapfile_threshold(
-    input_filename, output_filename, threshold=0, normalize=False, zero=True
+    input_map_filename,
+    output_map_filename,
+    output_mask_filename=None,
+    threshold=0,
+    normalize=False,
+    zero=True,
 ):
     """
     Threshold the map
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
         threshold (float): The threshold value
         normalize (bool): Normalize the map before thresholding
         zero (bool): Shift the data to zero
@@ -58,16 +64,22 @@ def mapfile_threshold(
     """
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Get data
     data = infile.data.copy()
 
     # Apply the threshold
-    data = array_threshold(data, threshold=threshold, normalize=normalize, zero=zero)
+    data, mask = array_threshold(
+        data, threshold=threshold, normalize=normalize, zero=zero
+    )
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    write(output_map_filename, data, infile=infile)
+
+    # Write the mask
+    if output_mask_filename:
+        write(output_mask_filename, mask.astype("uint8"), infile=infile)
 
 
 def threshold(*args, **kwargs):
@@ -75,7 +87,7 @@ def threshold(*args, **kwargs):
     Threshold the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
         func = mapfile_threshold
     else:
         func = array_threshold

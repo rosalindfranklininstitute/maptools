@@ -77,8 +77,8 @@ def array_transform(
 
 
 def mapfile_transform(
-    input_filename,
-    output_filename,
+    input_map_filename,
+    output_map_filename,
     offset=None,
     rotation=(0, 0, 0),
     translation=(0, 0, 0),
@@ -88,8 +88,8 @@ def mapfile_transform(
     Transform the map
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
         offset = (array): The offset to rotate about
         rotation (array): The rotation vector
         translation (array): The translation vector
@@ -98,7 +98,7 @@ def mapfile_transform(
     """
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Get the axis order
     axis_order = read_axis_order(infile)
@@ -117,7 +117,7 @@ def mapfile_transform(
     )
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    write(output_map_filename, data, infile=infile)
 
 
 def transform(*args, **kwargs):
@@ -125,7 +125,7 @@ def transform(*args, **kwargs):
     Transform the data
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
         func = mapfile_transform
     else:
         func = array_transform

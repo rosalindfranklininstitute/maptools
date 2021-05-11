@@ -8,20 +8,20 @@
 #
 import logging
 import numpy
-from maptools.util import read, write
+from selknam.maptools.util import read, write
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def fft(input_filename, output_filename, mode=None, shift=True, normalize=True):
+def fft(input_map_filename, output_map_filename, mode=None, shift=True, normalize=True):
     """
     Compute the FFT of the map
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
         mode (str): The component to output
         shift (bool): Shift the fourier components
         normalize (bool): Normalize before computing FFT
@@ -29,7 +29,7 @@ def fft(input_filename, output_filename, mode=None, shift=True, normalize=True):
     """
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Get the subset of data
     logger.info("Computing FFT (%s)" % mode)
@@ -55,4 +55,4 @@ def fft(input_filename, output_filename, mode=None, shift=True, normalize=True):
         data = numpy.fft.fftshift(data)
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    write(output_map_filename, data, infile=infile)

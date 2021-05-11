@@ -87,8 +87,8 @@ def array_filter(
 
 
 def mapfile_filter(
-    input_filename,
-    output_filename,
+    input_map_filename,
+    output_map_filename,
     filter_type="lowpass",
     filter_shape="gaussian",
     resolution=None,
@@ -97,8 +97,8 @@ def mapfile_filter(
     Filter the map
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
         filter_type (str): The filter type
         filter_shape (str): The filter shape
         resolution (list): The resolution
@@ -110,7 +110,7 @@ def mapfile_filter(
     assert filter_shape in ["square", "gaussian"]
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Get the voxel size
     voxel_size = (
@@ -129,7 +129,7 @@ def mapfile_filter(
     )
 
     # Write the output file
-    write(output_filename, data, infile=infile)
+    write(output_map_filename, data, infile=infile)
 
 
 def filter(*args, **kwargs):
@@ -137,7 +137,7 @@ def filter(*args, **kwargs):
     Compute the local FSC of the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
         func = mapfile_filter
     else:
         func = array_filter

@@ -53,19 +53,19 @@ def array_reorder(data, original_order, new_order):
     return data
 
 
-def mapfile_reorder(input_filename, output_filename, axis_order=None):
+def mapfile_reorder(input_map_filename, output_map_filename, axis_order=None):
     """
     Reorder the data axes
 
     Args:
-        input_filename (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename (str): The input map filename
+        output_map_filename (str): The output map filename
         axis_order (list): The axis order
 
     """
 
     # Open the input file
-    infile = read(input_filename)
+    infile = read(input_map_filename)
 
     # Get the axis order
     original_order = read_axis_order(infile)
@@ -75,7 +75,7 @@ def mapfile_reorder(input_filename, output_filename, axis_order=None):
     data = array_reorder(infile.data, original_order, axis_order)
 
     # Write the output file
-    outfile = write(output_filename, data, infile=infile)
+    outfile = write(output_map_filename, data, infile=infile)
     write_axis_order(outfile, axis_order)
     outfile.update_header_stats()
 
@@ -85,7 +85,7 @@ def reorder(*args, **kwargs):
     Reorder the data axes
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
         func = mapfile_reorder
     else:
         func = array_reorder

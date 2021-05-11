@@ -9,8 +9,8 @@
 import logging
 import numpy
 import scipy.ndimage
-from maptools.util import read, write, read_axis_order
-from maptools.reorder import reorder
+from selknam.maptools.util import read, write, read_axis_order
+from selknam.maptools.reorder import reorder
 
 
 # Get the logger
@@ -77,23 +77,27 @@ def array_fsc3d(
 
 
 def mapfile_fsc3d(
-    input_filename1, input_filename2, output_filename=None, kernel=9, resolution=None
+    input_map_filename1,
+    input_map_filename2,
+    output_map_filename=None,
+    kernel=9,
+    resolution=None,
 ):
     """
     Compute the local FSC of the map
 
     Args:
-        input_filename1 (str): The input map filename
-        input_filename2 (str): The input map filename
-        output_filename (str): The output map filename
+        input_map_filename1 (str): The input map filename
+        input_map_filename2 (str): The input map filename
+        output_map_filename (str): The output map filename
         kernel (int): The kernel size
         resolution (float): The resolution limit
 
     """
 
     # Open the input files
-    infile1 = read(input_filename1)
-    infile2 = read(input_filename2)
+    infile1 = read(input_map_filename1)
+    infile2 = read(input_map_filename2)
 
     # Get the data
     data1 = infile1.data
@@ -116,7 +120,7 @@ def mapfile_fsc3d(
     fsc = reorder(fsc, (0, 1, 2), read_axis_order(infile1))
 
     # Write the output file
-    write(output_filename, fsc.astype("float32"), infile=infile1)
+    write(output_map_filename, fsc.astype("float32"), infile=infile1)
 
 
 def fsc3d(*args, **kwargs):
@@ -124,7 +128,7 @@ def fsc3d(*args, **kwargs):
     Compute the local FSC of the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_filename1" in kwargs:
+    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename1" in kwargs:
         func = mapfile_fsc3d
     else:
         func = array_fsc3d
