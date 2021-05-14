@@ -51,9 +51,7 @@ def array_cc(data1, data2=None, **kwargs):
     return cc
 
 
-def mapfile_cc(
-    input_map_filename1, input_map_filename2=None, output_map_filename=None,
-):
+def mapfile_cc(input_map_filename1, input_map_filename2=None, output_map_filename=None):
     """
     Compute the CC between two maps
 

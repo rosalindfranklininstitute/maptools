@@ -45,11 +45,11 @@ def genmask(
 
     # Add a border
     mask[:border, :, :] = 0
-    mask[-border-1:, :, :] = 0
+    mask[-border - 1 :, :, :] = 0
     mask[:, :border, :] = 0
-    mask[:, -border-1:, :] = 0
+    mask[:, -border - 1 :, :] = 0
     mask[:, :, :border] = 0
-    mask[:, :, -border-1:] = 0
+    mask[:, :, -border - 1 :] = 0
 
     # Add atom mask
     if input_pdb_filename is not None:
@@ -79,14 +79,18 @@ def genmask(
         atoms[index[0], index[1], index[2]] = 0
 
         # Compute distance and update mask
-        distance = scipy.ndimage.morphology.distance_transform_edt(atoms, sampling=voxel_size)
+        distance = scipy.ndimage.morphology.distance_transform_edt(
+            atoms, sampling=voxel_size
+        )
         mask = mask & (distance <= atom_radius)
 
     # Soften the mask
     if sigma > 0:
         logger.info("Soften mask edge with sigma = %f" % sigma)
-        distance = scipy.ndimage.morphology.distance_transform_edt(~mask, sampling=voxel_size)
-        mask = numpy.exp(-0.5*distance**2/sigma**2)
+        distance = scipy.ndimage.morphology.distance_transform_edt(
+            ~mask, sampling=voxel_size
+        )
+        mask = numpy.exp(-0.5 * distance ** 2 / sigma ** 2)
 
     # Write the output file
     outfile = write(output_mask_filename, mask.astype("float32"))

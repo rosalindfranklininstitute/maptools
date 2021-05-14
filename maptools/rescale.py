@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def array_rescale(
-    data, mean=None, sdev=None, vmin=None, vmax=None, scale=None, offset=None,
+    data, mean=None, sdev=None, vmin=None, vmax=None, scale=None, offset=None
 ):
     """
     Rescale the map

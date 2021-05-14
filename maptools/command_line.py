@@ -192,7 +192,7 @@ def genmask(args):
         border=args.border,
         shape=args.shape,
         voxel_size=args.voxel_size,
-        sigma=args.sigma
+        sigma=args.sigma,
     )
 
 
@@ -268,9 +268,7 @@ def rebin(args):
 
     """
     maptools.rebin(
-        input_map_filename=args.input,
-        output_map_filename=args.output,
-        shape=args.shape,
+        input_map_filename=args.input, output_map_filename=args.output, shape=args.shape
     )
 
 
@@ -856,11 +854,7 @@ def main(args=None):
             help="The voxel size",
         )
         parser_genmask.add_argument(
-            "--sigma",
-            dest="sigma",
-            type=float,
-            default=0,
-            help="Soften the mask edge",
+            "--sigma", dest="sigma", type=float, default=0, help="Soften the mask edge"
         )
 
     def add_mask_arguments(subparsers, parser_common):
@@ -1058,7 +1052,7 @@ def main(args=None):
             help="The output map file",
         )
         parser_rescale.add_argument(
-            "--mean", dest="mean", type=float, default=None, help="The mean",
+            "--mean", dest="mean", type=float, default=None, help="The mean"
         )
         parser_rescale.add_argument(
             "--sdev",
@@ -1068,16 +1062,16 @@ def main(args=None):
             help="The standard deviation",
         )
         parser_rescale.add_argument(
-            "--min", dest="min", type=float, default=None, help="The minimum",
+            "--min", dest="min", type=float, default=None, help="The minimum"
         )
         parser_rescale.add_argument(
-            "--max", dest="max", type=float, default=None, help="The maximum",
+            "--max", dest="max", type=float, default=None, help="The maximum"
         )
         parser_rescale.add_argument(
-            "--scale", dest="scale", type=float, default=None, help="The scale",
+            "--scale", dest="scale", type=float, default=None, help="The scale"
         )
         parser_rescale.add_argument(
-            "--offset", dest="offset", type=float, default=None, help="The offset",
+            "--offset", dest="offset", type=float, default=None, help="The offset"
         )
 
     def add_rotate_arguments(subparsers, parser_common):

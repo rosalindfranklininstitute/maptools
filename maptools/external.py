@@ -19,7 +19,7 @@ def is_ccp4_available():
     Check if CCP4 is available
 
     """
-    return os.environ.get("CCP4", None) not in [ None, "" ]
+    return os.environ.get("CCP4", None) not in [None, ""]
 
 
 class cd:

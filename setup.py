@@ -19,7 +19,14 @@ def main():
 
     setup(
         packages=["maptools"],
-        install_requires=["gemmi", "matplotlib", "mrcfile", "pyyaml", "scipy", "scikit-image"],
+        install_requires=[
+            "gemmi",
+            "matplotlib",
+            "mrcfile",
+            "pyyaml",
+            "scipy",
+            "scikit-image",
+        ],
         setup_requires=["pytest-runner"],
         tests_require=tests_require,
         test_suite="tests",

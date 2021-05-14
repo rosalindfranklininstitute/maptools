@@ -16,9 +16,7 @@ from maptools.reorder import reorder
 logger = logging.getLogger(__name__)
 
 
-def array_mask(
-    data, mask, value=0, zero=True, fourier_space=False, shift=False,
-):
+def array_mask(data, mask, value=0, zero=True, fourier_space=False, shift=False):
     """
     Mask the map
 

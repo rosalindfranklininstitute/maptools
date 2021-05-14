@@ -234,7 +234,7 @@ def mapfile_fsc(
         results.append(
             {
                 "axis": current_axis,
-                "table": {"bin": list(map(float, bins)), "fsc": list(map(float, fsc)),},
+                "table": {"bin": list(map(float, bins)), "fsc": list(map(float, fsc))},
                 "resolution": {
                     "bin_index": int(bin_index),
                     "bin_value": float(bin_value),
@@ -242,7 +242,7 @@ def mapfile_fsc(
                     "estimate": float(1 / sqrt(bin_value)),
                 },
                 "fsc_average": fsc_average,
-            },
+            }
         )
 
     # Write the FSC curve
@@ -272,9 +272,7 @@ def mapfile_fsc(
     # Write a data file
     if output_data_filename is not None:
         with open(output_data_filename, "w") as outfile:
-            yaml.safe_dump(
-                results, outfile,
-            )
+            yaml.safe_dump(results, outfile)
 
     # Return the results
     return results
