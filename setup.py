@@ -23,6 +23,7 @@ def main():
             "gemmi",
             "matplotlib",
             "mrcfile",
+            "numpy",
             "pyyaml",
             "scipy",
             "scikit-image",
