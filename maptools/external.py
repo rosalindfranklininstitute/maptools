@@ -416,7 +416,7 @@ def refine(
             "end",
         ]
     else:
-        raise RuntimeError("Unknown method: %s" % method)
+        raise RuntimeError("Unknown mode: %s" % mode)
 
     # Do the refinement
     call_refmac5(
