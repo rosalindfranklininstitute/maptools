@@ -6,6 +6,7 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/jmp1985/maptools.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jmp1985/maptools/alerts/)
 [![Building](https://github.com/rosalindfranklininstitute/maptools/actions/workflows/python-package.yml/badge.svg)](https://github.com/rosalindfranklininstitute/maptools/actions/workflows/python-package.yml)
 [![Publishing](https://github.com/rosalindfranklininstitute/maptools/actions/workflows/python-publish.yml/badge.svg)](https://github.com/rosalindfranklininstitute/maptools/actions/workflows/python-publish.yml)
+[![DOI](https://zenodo.org/badge/361779782.svg)](https://zenodo.org/badge/latestdoi/361779782)
 
 ## Installation
 
