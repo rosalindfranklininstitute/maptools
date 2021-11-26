@@ -8,7 +8,7 @@
 #
 import logging
 import numpy
-import scipy
+import scipy.signal
 from maptools.util import read, write
 
 
