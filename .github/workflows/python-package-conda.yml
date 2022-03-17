@@ -25,13 +25,9 @@ jobs:
       run: |
         conda env update --file conda/environment.yaml --name base
         conda config --env --add channels james.parkhurst
+        conda config --set anaconda_upload yes
+        anaconda login --username=${{ secrets.ANACONDA_USERNAME }} --password=${{ secrets.ANACONDA_PASSWORD }}
         
     - name: Build package
       run: |
         conda build conda/
-        conda install --use-local maptools
-        
-    - name: Deploy
-      run: |
-        anaconda login --username=A --password=B
-        anaconda upload maptools*.tar.gz
