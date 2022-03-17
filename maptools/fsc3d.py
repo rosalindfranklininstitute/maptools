@@ -65,7 +65,7 @@ def array_fsc3d(
         Z = (1.0 / voxel_size["z"]) * (Z - shape[0] // 2) / shape[0]
         Y = (1.0 / voxel_size["y"]) * (Y - shape[1] // 2) / shape[1]
         X = (1.0 / voxel_size["x"]) * (X - shape[2] // 2) / shape[2]
-        R = numpy.sqrt(X ** 2 + Y ** 2 + Z ** 2)
+        R = numpy.sqrt(X**2 + Y**2 + Z**2)
         mask = R < 1.0 / resolution
         fsc *= mask
 

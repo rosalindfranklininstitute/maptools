@@ -31,7 +31,7 @@ def array_dilate(data, kernel=3, num_iter=1):
     z = z - kernel // 2
     y = y - kernel // 2
     x = x - kernel // 2
-    r = numpy.sqrt(x ** 2 + y ** 2 + z ** 2)
+    r = numpy.sqrt(x**2 + y**2 + z**2)
     mask = r <= kernel // 2
 
     # Do the dilation

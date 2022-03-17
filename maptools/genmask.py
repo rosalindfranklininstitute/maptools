@@ -90,7 +90,7 @@ def genmask(
         distance = scipy.ndimage.morphology.distance_transform_edt(
             ~mask, sampling=voxel_size
         )
-        mask = numpy.exp(-0.5 * distance ** 2 / sigma ** 2)
+        mask = numpy.exp(-0.5 * distance**2 / sigma**2)
 
     # Write the output file
     outfile = write(output_mask_filename, mask.astype("float32"))

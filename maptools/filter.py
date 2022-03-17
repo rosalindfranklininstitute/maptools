@@ -36,7 +36,7 @@ def array_filter(
     z = (1 / voxel_size[0]) * (z - fdata.shape[0] // 2) / fdata.shape[0]
     y = (1 / voxel_size[1]) * (y - fdata.shape[1] // 2) / fdata.shape[1]
     x = (1 / voxel_size[2]) * (x - fdata.shape[2] // 2) / fdata.shape[2]
-    r = numpy.sqrt(x ** 2 + y ** 2 + z ** 2)
+    r = numpy.sqrt(x**2 + y**2 + z**2)
     r = numpy.fft.fftshift(r)
 
     # Create the filter mask
