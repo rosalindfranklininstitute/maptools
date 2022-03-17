@@ -46,14 +46,4 @@ test:
     - pytest-cov
 
 about:
-  home: The package home page
-  license: BSD
-  license_family: BSD
-  license_file: 
   summary: "Manipulate maps"
-  doc_url: 
-  dev_url: 
-
-extra:
-  recipe-maintainers:
-    - your-github-id-here
