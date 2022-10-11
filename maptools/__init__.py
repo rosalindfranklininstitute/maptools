@@ -28,6 +28,13 @@ from maptools._segment import segment
 from maptools._threshold import threshold
 from maptools._transform import transform
 
+
+try:
+    from maptools._version import version as __version__
+except ImportError:
+    __version__ = "unknown"
+
+
 __all__ = [
     "cc",
     "crop",

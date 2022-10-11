@@ -28,9 +28,10 @@ def main():
             "scipy",
             "scikit-image",
         ],
-        setup_requires=["pytest-runner"],
+        setup_requires=["setuptools_scm", "pytest-runner"],
         tests_require=tests_require,
         test_suite="tests",
+        use_scm_version={"write_to": "maptools/_version.py"},
         entry_points={"console_scripts": ["map=maptools.command_line:main"]},
         extras_require={
             "build_sphinx": ["sphinx", "sphinx_rtd_theme"],

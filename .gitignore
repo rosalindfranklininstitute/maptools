@@ -130,3 +130,6 @@ dmypy.json
 
 # Ignore tags
 tags
+
+# setuptools_scm
+_version.py
