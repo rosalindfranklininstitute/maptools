@@ -14,7 +14,7 @@ def test_rescale(ideal_map_filename):
         _, output_map_filename = tempfile.mkstemp()
 
         maptools.rescale(
-            input_map_filename=ideal_map_filename,
+            ideal_map_filename,
             output_map_filename=output_map_filename,
             mean=mean,
             sdev=sdev,
