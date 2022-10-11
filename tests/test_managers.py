@@ -3,7 +3,6 @@ import pathlib
 import random
 import secrets
 import struct
-import sys
 import unittest
 
 import numpy
@@ -11,7 +10,7 @@ import numpy
 from maptools import models, cli, managers  # , utils, engines
 
 BASE_DIR = pathlib.Path(__file__).parent.parent
-TEST_DATA_DIR = BASE_DIR / 'test_data'
+TEST_DATA_DIR = BASE_DIR / "test_data"
 
 
 class TestManagers(unittest.TestCase):
@@ -20,7 +19,7 @@ class TestManagers(unittest.TestCase):
         self.test_fn2 = TEST_DATA_DIR / f"file-{secrets.token_urlsafe(3)}.map"
         shape = random.choices(range(12, 52, 4), k=3)
         self.shape = shape
-        with models.MapFile(self.test_fn, 'w') as mapfile:
+        with models.MapFile(self.test_fn, "w") as mapfile:
             mapfile.data = numpy.random.rand(*shape)
             mapfile.voxel_size = 3.78
 
@@ -45,7 +44,9 @@ class TestManagers(unittest.TestCase):
         args = cli.cli(f"map edit {self.test_fn} -o {self.test_fn2}")
         managers.edit(args)
         # no changes then both files should be exactly alike
-        with models.MapFile(self.test_fn, file_mode='r') as map1, models.MapFile(self.test_fn2, file_mode='r') as map2:
+        with models.MapFile(self.test_fn, file_mode="r") as map1, models.MapFile(
+            self.test_fn2, file_mode="r"
+        ) as map2:
             self.assertEqual(map1.nc, map2.nc)
             self.assertEqual(map1.nr, map2.nr)
             self.assertEqual(map1.ns, map2.ns)
@@ -126,16 +127,16 @@ class TestManagers(unittest.TestCase):
 
     def test_file_modes(self):
         """Demonstrate that modifying a file with r+b does not truncate file. Call file.truncate() to do so."""
-        with open(self.test_fn, 'wb') as f:
-            f.write(struct.pack('<10f', *(0.0,) * 10))
-        with open(self.test_fn, 'rb') as g:
-            data = struct.unpack('<10f', g.read(10 * 4))
+        with open(self.test_fn, "wb") as f:
+            f.write(struct.pack("<10f", *(0.0,) * 10))
+        with open(self.test_fn, "rb") as g:
+            data = struct.unpack("<10f", g.read(10 * 4))
             print(f"before: {data}")
-        with open(self.test_fn, 'r+b') as h:
+        with open(self.test_fn, "r+b") as h:
             print(f"{h.tell()}")
-            h.write(struct.pack('<5f', *(1.0,) * 5))
-        with open(self.test_fn, 'rb') as g:
-            data = struct.unpack('<10f', g.read(10 * 4))
+            h.write(struct.pack("<5f", *(1.0,) * 5))
+        with open(self.test_fn, "rb") as g:
+            data = struct.unpack("<10f", g.read(10 * 4))
             print(f"after: {data}")
 
     def test_edit_with_label(self):
@@ -162,7 +163,9 @@ class TestManagers(unittest.TestCase):
 
     def test_create_ad_hoc(self):
         """"""
-        args = cli.cli(f"map create {self.test_fn} -O XYZ -V 1.9 9.1 7.1 -M 2 -S -5 -5 -5 -s 30 15 28")
+        args = cli.cli(
+            f"map create {self.test_fn} -O XYZ -V 1.9 9.1 7.1 -M 2 -S -5 -5 -5 -s 30 15 28"
+        )
         managers.create(args)
         with models.MapFile(self.test_fn, colour=True) as mapfile:
             print(mapfile)
@@ -173,17 +176,25 @@ class TestManagers(unittest.TestCase):
             self.assertEqual((-5, -5, -5), mapfile.start)
             self.assertEqual((28, 15, 30), mapfile.data.shape)
             print(mapfile.data)
-            self.assertTrue(numpy.array_equal(numpy.zeros(shape=args.size[::-1], dtype=numpy.int8), mapfile.data))
+            self.assertTrue(
+                numpy.array_equal(
+                    numpy.zeros(shape=args.size[::-1], dtype=numpy.int8), mapfile.data
+                )
+            )
 
     def test_create_random(self):
         """"""
-        args = cli.cli(f"map create {self.test_fn} -O XYZ -M 12 -V 1 1 1 --voxel-values random")
+        args = cli.cli(
+            f"map create {self.test_fn} -O XYZ -M 12 -V 1 1 1 --voxel-values random"
+        )
         managers.create(args)
         with models.MapFile(self.test_fn) as mapfile:
             # how do we know it's random?
             # densities: min, max, mean and rms should all be different
             # the length of the set of these values should be 4
-            self.assertEqual(4, len({mapfile.amin, mapfile.amax, mapfile.amean, mapfile.rms}))
+            self.assertEqual(
+                4, len({mapfile.amin, mapfile.amax, mapfile.amean, mapfile.rms})
+            )
 
     def test_resample(self):
         """"""
@@ -191,4 +202,7 @@ class TestManagers(unittest.TestCase):
         managers.sample(args)
         c, r, s = self.shape
         with models.MapFile(self.test_fn) as mapfile:
-            self.assertEqual((c // args.factor, r // args.factor, s // args.factor), mapfile.data.shape)
+            self.assertEqual(
+                (c // args.factor, r // args.factor, s // args.factor),
+                mapfile.data.shape,
+            )

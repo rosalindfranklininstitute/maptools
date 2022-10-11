@@ -1,17 +1,10 @@
-import os
 import pathlib
-import random
-import secrets
-import struct
-import sys
 import unittest
 
-import numpy
-
-from maptools import models, cli, managers, utils, engines
+from maptools import utils, engines
 
 BASE_DIR = pathlib.Path(__file__).parent.parent
-TEST_DATA_DIR = BASE_DIR / 'test_data'
+TEST_DATA_DIR = BASE_DIR / "test_data"
 
 
 class TestEngines(unittest.TestCase):

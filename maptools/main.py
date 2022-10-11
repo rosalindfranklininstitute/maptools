@@ -9,11 +9,11 @@ def main():
     if args.command is None:
         return os.EX_USAGE
     try:
-        if args.command == 'view':
+        if args.command == "view":
             return managers.view(args)
-        elif args.command == 'edit':
+        elif args.command == "edit":
             return managers.edit(args)
-        elif args.command == 'create':
+        elif args.command == "create":
             return managers.create(args)
     except KeyboardInterrupt:
         return os.EX_DATAERR

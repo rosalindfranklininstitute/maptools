@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def cross_correlation(
-        data1: numpy.ndarray, data2: numpy.ndarray | None = None, **kwargs
+    data1: numpy.ndarray, data2: numpy.ndarray | None = None, **kwargs
 ) -> numpy.ndarray:
     """Compute the cross correlation using the data from two MAPs"""
     # Compute the Fourier transform of the data
@@ -25,12 +25,15 @@ def cross_correlation(
 
     # Compute the CC
     _cross_correlation = (
-            numpy.fft.fftshift(numpy.real(numpy.fft.ifftn(fdata1 * numpy.conj(fdata2))))
-            / fdata1.size
+        numpy.fft.fftshift(numpy.real(numpy.fft.ifftn(fdata1 * numpy.conj(fdata2))))
+        / fdata1.size
     )
 
     # Print some output
-    logger.info("Min CC = %f, Max CC = %f" % (_cross_correlation.min(), _cross_correlation.max()))
+    logger.info(
+        "Min CC = %f, Max CC = %f"
+        % (_cross_correlation.min(), _cross_correlation.max())
+    )
 
     # Return the CC
     return _cross_correlation

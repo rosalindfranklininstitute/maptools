@@ -2,16 +2,12 @@ import os
 import pathlib
 import random
 import secrets
-import struct
-import sys
 import unittest
 
-import numpy
-
-from maptools import models, cli, managers, utils, engines
+from maptools import models, utils
 
 BASE_DIR = pathlib.Path(__file__).parent.parent
-TEST_DATA_DIR = BASE_DIR / 'test_data'
+TEST_DATA_DIR = BASE_DIR / "test_data"
 
 
 class TestUtils(unittest.TestCase):
@@ -22,7 +18,7 @@ class TestUtils(unittest.TestCase):
         cls.random_name = TEST_DATA_DIR / f"file-{secrets.token_urlsafe(3)}.map"
         # random size
         cls.cols, cls.rows, cls.sections = random.sample(range(10, 30), k=3)
-        with models.MapFile(cls.random_name, 'w') as mapfile:
+        with models.MapFile(cls.random_name, "w") as mapfile:
             mapfile.data = utils.get_vol(cls.cols, cls.rows, cls.sections)
             # mapfile.data = voxel_size = 1.5
 
@@ -39,6 +35,6 @@ class TestUtils(unittest.TestCase):
         # by default, orientation is XYZ
         with models.MapFile(self.random_name) as mapfile:
             self.assertIsInstance(mapfile.orientation, models.Orientation)
-            self.assertEqual('X', mapfile.orientation.cols)
-            self.assertEqual('Y', mapfile.orientation.rows)
-            self.assertEqual('Z', mapfile.orientation.sections)
+            self.assertEqual("X", mapfile.orientation.cols)
+            self.assertEqual("Y", mapfile.orientation.rows)
+            self.assertEqual("Z", mapfile.orientation.sections)
