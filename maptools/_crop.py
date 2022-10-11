@@ -10,19 +10,27 @@ import logging
 from maptools.util import read, write
 
 
+__all__ = ["crop"]
+
+
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def crop(input_map_filename, output_map_filename, roi=None, origin=None):
+def crop(
+    input_map_filename: str,
+    output_map_filename: str,
+    roi: tuple = None,
+    origin: tuple = None,
+):
     """
     Crop the map
 
     Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        roi (list): The region of interest
-        origin (list): The origin
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        roi: The region of interest
+        origin: The origin
 
     """
 
@@ -40,7 +48,9 @@ def crop(input_map_filename, output_map_filename, roi=None, origin=None):
     assert x1 > x0
 
     # Get the subset of data
-    logger.info("Cropping map with roi: %s" % list(roi))
+    logger.info(
+        "Cropping map with roi: %d, %d, %d, %d, %d, %d" % (z0, y0, x0, z1, y1, x1)
+    )
     data = infile.data[z0:z1, y0:y1, x0:x1]
 
     # Write the output file
