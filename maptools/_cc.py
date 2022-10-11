@@ -34,8 +34,8 @@ def _cc(_):
 @_cc.register
 def _cc_str(
     input_map_filename1: str,
-    input_map_filename2: str = None,
-    output_map_filename: str = None,
+    input_map_filename2: str,
+    output_map_filename: str,
 ):
     """
     Compute the CC between two maps

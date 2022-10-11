@@ -21,11 +21,11 @@ logger = logging.getLogger(__name__)
 
 
 def genmask(
-    input_pdb_filename: str = None,
-    output_mask_filename: str = None,
+    input_pdb_filename: str,
+    output_mask_filename: str,
     atom_radius: float = 5,
     border: int = 0,
-    shape: tuple = None,
+    shape: tuple = (0, 0, 0),
     voxel_size: float = 1,
     sigma: float = 0,
 ):
@@ -33,13 +33,13 @@ def genmask(
     Generate the mask
 
     Args:
-        input_pdb_filename (str): The input pdb filename
-        output_mask_filename (str): The output map filename
-        atom_radius (float): The radius around the atoms
-        border (int): The border of pixels
-        shape (tuple): The shape of the output map
-        voxel_size (float): The voxel size of the output map
-        sigma (float): Soften the mask with a Gaussian edge
+        input_pdb_filename: The input pdb filename
+        output_mask_filename: The output map filename
+        atom_radius: The radius around the atoms
+        border: The border of pixels
+        shape: The shape of the output map
+        voxel_size: The voxel size of the output map
+        sigma: Soften the mask with a Gaussian edge
 
     """
 

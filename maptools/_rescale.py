@@ -35,12 +35,12 @@ def _rescale(_):
 def _rescale_str(
     input_map_filename: str,
     output_map_filename: str,
-    mean: str = None,
-    sdev: str = None,
-    vmin: str = None,
-    vmax: str = None,
-    scale: str = None,
-    offset: str = None,
+    mean: float = None,
+    sdev: float = None,
+    vmin: float = None,
+    vmax: float = None,
+    scale: float = None,
+    offset: float = None,
 ):
     """
     Rescale the map

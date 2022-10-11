@@ -12,6 +12,7 @@ import scipy.ndimage
 import scipy.spatial.transform
 from math import pi
 from functools import singledispatch
+from typing import Union
 from maptools.util import read, write, read_axis_order
 
 
@@ -82,9 +83,9 @@ def _transform_str(
 def _transform_ndarray(
     data: np.ndarray,
     axis_order: tuple = (0, 1, 2),
-    offset: tuple = None,
-    rotation: tuple = (0, 0, 0),
-    translation: tuple = (0, 0, 0),
+    offset: Union[tuple, np.ndarray] = None,
+    rotation: Union[tuple, np.ndarray] = (0, 0, 0),
+    translation: Union[tuple, np.ndarray] = (0, 0, 0),
     deg: bool = False,
 ) -> np.ndarray:
     """

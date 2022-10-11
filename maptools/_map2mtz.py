@@ -19,9 +19,7 @@ __all__ = ["map2mtz"]
 logger = logging.getLogger(__name__)
 
 
-def map2mtz(
-    input_map_filename: str, output_hkl_filename: str = None, resolution: float = 1
-):
+def map2mtz(input_map_filename: str, output_hkl_filename: str, resolution: float = 1):
     """
     Compute the CC between two maps
 

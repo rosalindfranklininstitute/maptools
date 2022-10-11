@@ -37,7 +37,7 @@ def _filter_str(
     output_map_filename: str,
     filter_type: str = "lowpass",
     filter_shape: str = "gaussian",
-    resolution: list = None,
+    resolution: list = [],
 ):
     """
     Filter the map
@@ -83,7 +83,7 @@ def _filter_ndarray(
     data: np.ndarray,
     filter_type: str = "lowpass",
     filter_shape: str = "gaussian",
-    resolution: list = None,
+    resolution: list = list(),
     voxel_size: tuple = (1, 1, 1),
 ) -> np.ndarray:
 
@@ -108,20 +108,20 @@ def _filter_ndarray(
 
         # Create the low pass filter
         assert len(resolution) == 1
-        resolution = resolution[0]
+        d = resolution[0]
         if filter_shape == "gaussian":
-            sigma = 1.0 / (sqrt(2 * log(2)) * resolution)
+            sigma = 1.0 / (sqrt(2 * log(2)) * d)
             mask = np.exp(-0.5 * (r / sigma) ** 2)
         elif filter_shape == "square":
-            mask = r < (1 / resolution)
+            mask = r < (1 / d)
 
     elif filter_type == "highpass":
 
         # Create the high pass filter
         assert len(resolution) == 1
-        resolution = resolution[0]
+        d = resolution[0]
         assert filter_shape == "square"
-        mask = r >= (1 / resolution)
+        mask = r >= (1 / d)
 
     elif filter_type == "bandpass":
 

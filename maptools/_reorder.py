@@ -32,7 +32,7 @@ def _reorder(_):
 
 @_reorder.register
 def _reorder_str(
-    input_map_filename, output_map_filename: str, axis_order: tuple = None
+    input_map_filename, output_map_filename: str, axis_order: tuple = (0, 1, 2)
 ):
     """
     Reorder the data axes
@@ -82,20 +82,20 @@ def _reorder_ndarray(
         return x
 
     # Convert to list
-    original_order = list(original_order)
+    old_order = list(original_order)
 
     # Reorder the axes
-    index = original_order.index(new_order[0])
+    index = old_order.index(new_order[0])
     if index != 0:
         logger.info("Swapping axis %d with %d" % (0, index))
         data = np.swapaxes(data, 0, index)
-        original_order = swap(original_order, 0, index)
-    index = original_order.index(new_order[1])
+        old_order = swap(old_order, 0, index)
+    index = old_order.index(new_order[1])
     if index != 1:
         logger.info("Swapping axis %d with %d" % (1, index))
         data = np.swapaxes(data, 1, index)
-        original_order = swap(original_order, 1, index)
-    assert tuple(original_order) == tuple(new_order)
+        old_order = swap(old_order, 1, index)
+    assert tuple(old_order) == tuple(new_order)
 
     # Return the reordered array
     return data

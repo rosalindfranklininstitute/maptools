@@ -36,7 +36,7 @@ def _fsc3d(_):
 def _fsc3d_str(
     input_map_filename1: str,
     input_map_filename2: str,
-    output_map_filename: str = None,
+    output_map_filename: str,
     kernel: int = 9,
     resolution: float = None,
 ):
@@ -64,13 +64,20 @@ def _fsc3d_str(
     data1 = maptools.reorder(data1, read_axis_order(infile1), (0, 1, 2))
     data2 = maptools.reorder(data2, read_axis_order(infile2), (0, 1, 2))
 
+    # Get voxel size
+    voxel_size = (
+        infile1.voxel_size["z"],
+        infile1.voxel_size["y"],
+        infile1.voxel_size["x"],
+    )
+
     # Compute the local FSC
     fsc = _fsc3d_ndarray(
         data1,
         data2,
         kernel=kernel,
         resolution=resolution,
-        voxel_size=infile1.voxel_size,
+        voxel_size=voxel_size,
     )
 
     # Reorder output array
@@ -130,9 +137,9 @@ def _fsc3d_ndarray(
     if resolution is not None:
         shape = fsc.shape
         Z, Y, X = np.mgrid[0 : shape[0], 0 : shape[1], 0 : shape[2]]
-        Z = (1.0 / voxel_size["z"]) * (Z - shape[0] // 2) / shape[0]
-        Y = (1.0 / voxel_size["y"]) * (Y - shape[1] // 2) / shape[1]
-        X = (1.0 / voxel_size["x"]) * (X - shape[2] // 2) / shape[2]
+        Z = (1.0 / voxel_size[0]) * (Z - shape[0] // 2) / shape[0]
+        Y = (1.0 / voxel_size[1]) * (Y - shape[1] // 2) / shape[1]
+        X = (1.0 / voxel_size[2]) * (X - shape[2] // 2) / shape[2]
         R = np.sqrt(X**2 + Y**2 + Z**2)
         mask = R < 1.0 / resolution
         fsc *= mask

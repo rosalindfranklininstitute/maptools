@@ -48,7 +48,9 @@ def crop(
     assert x1 > x0
 
     # Get the subset of data
-    logger.info("Cropping map with roi: %s" % list(roi))
+    logger.info(
+        "Cropping map with roi: %d, %d, %d, %d, %d, %d" % (z0, y0, x0, z1, y1, x1)
+    )
     data = infile.data[z0:z1, y0:y1, x0:x1]
 
     # Write the output file

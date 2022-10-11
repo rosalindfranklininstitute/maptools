@@ -9,6 +9,7 @@
 
 import logging
 import numpy as np
+from typing import Tuple
 from maptools.util import read, write
 
 
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 def rotate(
     input_map_filename: str,
     output_map_filename: str,
-    axes: tuple = (0, 1),
+    axes: Tuple[int, int] = (0, 1),
     num: int = 1,
 ):
     """

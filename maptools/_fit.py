@@ -23,10 +23,10 @@ logger = logging.getLogger(__name__)
 def fit(
     input_map_filename: str,
     input_pdb_filename: str,
-    output_pdb_filename: str = None,
+    output_pdb_filename: str,
     resolution: float = 1,
     ncycle: int = 10,
-    mode: float = "rigid_body",
+    mode: str = "rigid_body",
     log_filename: str = "fit.log",
 ):
     """

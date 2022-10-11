@@ -11,6 +11,7 @@ import numpy as np
 import scipy.ndimage
 import yaml
 import maptools
+from typing import Sequence
 from functools import singledispatch
 from matplotlib import pylab, ticker
 from maptools.util import read, read_axis_order
@@ -68,7 +69,7 @@ def _fsc_str(
     output_data_filename: str = None,
     nbins: int = 20,
     resolution: float = None,
-    axis: tuple = None,
+    axis: Sequence = None,
     method: str = "binned",
 ):
     """

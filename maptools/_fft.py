@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 def fft(
     input_map_filename: str,
     output_map_filename: str,
-    mode: str = None,
+    mode: str = "amplitude",
     shift: bool = True,
     normalize: bool = True,
 ):

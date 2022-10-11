@@ -35,7 +35,7 @@ def _mask(_):
 def _mask_str(
     input_map_filename,
     output_map_filename: str,
-    input_mask_filename: str = None,
+    input_mask_filename: str,
     fourier_space: bool = False,
     shift: bool = False,
 ):

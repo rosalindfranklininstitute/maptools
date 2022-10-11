@@ -21,9 +21,9 @@ logger = logging.getLogger(__name__)
 
 def pdb2map(
     input_pdb_filename: str,
-    output_map_filename: str = None,
+    output_map_filename: str,
     resolution: int = 1,
-    grid: tuple = None,
+    grid: tuple = (0, 0, 0),
 ):
     """
     Compute the CC between two maps

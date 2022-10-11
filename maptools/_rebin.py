@@ -32,7 +32,7 @@ def _rebin(_):
 
 
 @_rebin.register
-def _rebin_str(input_map_filename: str, output_map_filename: str, shape: tuple = None):
+def _rebin_str(input_map_filename: str, output_map_filename: str, shape: tuple):
     """
     Rebin the map
 

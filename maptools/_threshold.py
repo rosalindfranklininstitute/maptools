@@ -73,7 +73,7 @@ def _threshold_str(
 @_threshold.register
 def _threshold_ndarray(
     data: np.ndarray, threshold: float = 0, normalize: bool = False, zero: bool = True
-) -> np.ndarray:
+) -> tuple:
     """
     Threshold the map
 
