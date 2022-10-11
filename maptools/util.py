@@ -8,7 +8,7 @@
 #
 import logging
 import mrcfile
-import numpy
+import numpy as np
 
 
 # Get the logger
@@ -41,7 +41,7 @@ def write(filename, data, infile=None):
 
     """
     logger.info("Writing %s" % filename)
-    if data.dtype == numpy.float64:
+    if data.dtype == np.float64:
         data = data.astype("float32")
     outfile = mrcfile.new(filename, overwrite=True)
     outfile.set_data(data)
