@@ -15,6 +15,9 @@ from functools import singledispatch
 from maptools.util import read, write
 
 
+__all__ = ["segment"]
+
+
 # Get the logger
 logger = logging.getLogger(__name__)
 

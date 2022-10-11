@@ -26,9 +26,9 @@ def rebin(input_map_filename, output_map_filename: str, shape: tuple = None):
     Rebin the map
 
     Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        shape (tuple): The new shape of the map
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        shape: The new shape of the map
 
     """
 

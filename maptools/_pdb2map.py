@@ -12,18 +12,26 @@ import tempfile
 import maptools.external
 
 
+__all__ = ["pdb2map"]
+
+
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def pdb2map(input_pdb_filename, output_map_filename=None, resolution=1, grid=None):
+def pdb2map(
+    input_pdb_filename: str,
+    output_map_filename: str = None,
+    resolution: int = 1,
+    grid: tuple = None,
+):
     """
     Compute the CC between two maps
 
     Args:
-        input_pdb_filename (str): The input pdb filename
-        output_map_filename (str): The output map filename
-        resolution (float): The resolution
+        input_pdb_filename: The input pdb filename
+        output_map_filename: The output map filename
+        resolution: The resolution
 
     """
 

@@ -13,12 +13,15 @@ from functools import singledispatch
 from maptools.util import read, write
 
 
+__all__ = ["erode"]
+
+
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
 @singledispatch
-def dilate(
+def erode(
     input_map_filename, output_map_filename: str, kernel: int = 3, num_iter: int = 1
 ):
     """
@@ -37,14 +40,14 @@ def dilate(
 
     # Get the subset of data
     logger.info("Dilating map")
-    data = _dilate_ndarray(infile.data, kernel=kernel, num_iter=num_iter)
+    data = _erode_ndarray(infile.data, kernel=kernel, num_iter=num_iter)
 
     # Write the output file
     write(output_map_filename, data.astype("uint8"), infile=infile)
 
 
-@dilate.register
-def _dilate_ndarray(data: np.ndarray, kernel: int = 3, num_iter: int = 1) -> np.ndarray:
+@erode.register
+def _erode_ndarray(data: np.ndarray, kernel: int = 3, num_iter: int = 1) -> np.ndarray:
     """
     Dilate the map
 

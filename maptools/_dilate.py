@@ -13,22 +13,25 @@ from functools import singledispatch
 from maptools.util import read, write
 
 
+__all__ = ["dilate"]
+
+
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
 @singledispatch
-def mapfile_erode(
+def dilate(
     input_map_filename, output_map_filename: str, kernel: int = 3, num_iter: int = 1
 ):
     """
     Dilate the map
 
     Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        kernel (tuple): The kernel size
-        num_iter (int): The number of iterations
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        kernel: The kernel size
+        num_iter: The number of iterations
 
     """
 
@@ -37,21 +40,21 @@ def mapfile_erode(
 
     # Get the subset of data
     logger.info("Dilating map")
-    data = _erode_ndarray(infile.data, kernel=kernel, num_iter=num_iter)
+    data = _dilate_ndarray(infile.data, kernel=kernel, num_iter=num_iter)
 
     # Write the output file
     write(output_map_filename, data.astype("uint8"), infile=infile)
 
 
-@erode.register
-def _erode_ndarray(data: np.ndarray, kernel: int = 3, num_iter: int = 1):
+@dilate.register
+def _dilate_ndarray(data: np.ndarray, kernel: int = 3, num_iter: int = 1) -> np.ndarray:
     """
     Dilate the map
 
     Args:
-        data (array): The array
-        kernel (int): The kernel size
-        num_iter (int): The number of iterations
+        data: The array
+        kernel: The kernel size
+        num_iter: The number of iterations
 
     """
     # Generate a mask

@@ -13,6 +13,9 @@ from maptools.util import read, write, read_axis_order
 from maptools.reorder import reorder
 
 
+__all__ = ["__mask__"]
+
+
 # Get the logger
 logger = logging.getLogger(__name__)
 
