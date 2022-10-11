@@ -31,7 +31,12 @@ def main():
         setup_requires=["pytest-runner"],
         tests_require=tests_require,
         test_suite="tests",
-        entry_points={"console_scripts": ["map=maptools.command_line:main"]},
+        entry_points={
+            "console_scripts": [
+                "map=maptools.command_line:main",
+                "map2=maptools.main:main",
+            ]
+        },
         extras_require={
             "build_sphinx": ["sphinx", "sphinx_rtd_theme"],
             "test": tests_require,
