@@ -7,7 +7,8 @@
 # which is included in the root directory of this package.
 #
 import logging
-import numpy
+import numpy as np
+from functools import singledispatch
 from maptools.util import read, write, read_axis_order
 from maptools.reorder import reorder
 
@@ -16,57 +17,23 @@ from maptools.reorder import reorder
 logger = logging.getLogger(__name__)
 
 
-def array_mask(data, mask, value=0, zero=True, fourier_space=False, shift=False):
-    """
-    Mask the map
-
-    Args:
-        data (array): The map
-        mask (array): The mask
-        space (str): Apply in real space or fourier space
-        shift (bool): Shift the mask
-
-    Returns:
-        array: The masked map
-
-    """
-
-    # Apply mask
-    if shift:
-        logger.info("Shifting mask")
-        mask = numpy.fft.fftshift(mask)
-    if not fourier_space:
-        logger.info("Applying mask in real space")
-        data = data * mask
-        # mask = mask > 0
-        # data = data * mask + (~mask) * value
-        # if zero:
-        #     masked_data = data[mask]
-        #     data[mask] = masked_data - numpy.min(masked_data) + value
-    else:
-        logger.info("Applying mask in Fourier space")
-        data = numpy.real(numpy.fft.ifftn(numpy.fft.fftn(data) * mask))
-
-    # Return the masked map
-    return data
-
-
-def mapfile_mask(
+@singledispatch
+def mask(
     input_map_filename,
-    output_map_filename,
-    input_mask_filename=None,
-    fourier_space=False,
-    shift=False,
+    output_map_filename: str,
+    input_mask_filename: str = None,
+    fourier_space: bool = False,
+    shift: bool = False,
 ):
     """
     Mask the map
 
     Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        input_mask_filename (str): The mask filename
-        space (str): Apply in real space or fourier space
-        shift (bool): Shift the mask
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        input_mask_filename: The mask filename
+        fourier_space: Apply in real space or fourier space
+        shift: Shift the mask
 
     """
 
@@ -84,19 +51,50 @@ def mapfile_mask(
     mask = reorder(mask, read_axis_order(maskfile), read_axis_order(infile))
 
     # Apply the mask
-    data = array_mask(data, mask, fourier_space=fourier_space, shift=shift)
+    data = _mask_ndarray(data, mask, fourier_space=fourier_space, shift=shift)
 
     # Write the output file
     write(output_map_filename, data.astype("float32"), infile=infile)
 
 
-def mask(*args, **kwargs):
+@mask.register
+def _mask_ndarray(
+    data: np.ndarray,
+    mask: np.ndarray,
+    value: int = 0,
+    zero: bool = True,
+    fourier_space: bool = False,
+    shift: bool = False,
+) -> np.ndarray:
     """
     Mask the map
 
+    Args:
+        data (array): The map
+        mask (array): The mask
+        space (str): Apply in real space or fourier space
+        shift (bool): Shift the mask
+
+    Returns:
+        array: The masked map
+
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
-        func = mapfile_mask
+
+    # Apply mask
+    if shift:
+        logger.info("Shifting mask")
+        mask = np.fft.fftshift(mask)
+    if not fourier_space:
+        logger.info("Applying mask in real space")
+        data = data * mask
+        # mask = mask > 0
+        # data = data * mask + (~mask) * value
+        # if zero:
+        #     masked_data = data[mask]
+        #     data[mask] = masked_data - np.min(masked_data) + value
     else:
-        func = array_mask
-    return func(*args, **kwargs)
+        logger.info("Applying mask in Fourier space")
+        data = np.real(np.fft.ifftn(np.fft.fftn(data) * mask))
+
+    # Return the masked map
+    return data

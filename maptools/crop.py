@@ -10,19 +10,27 @@ import logging
 from maptools.util import read, write
 
 
+__all__ = ["crop"]
+
+
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def crop(input_map_filename, output_map_filename, roi=None, origin=None):
+def crop(
+    input_map_filename,
+    output_map_filename: str,
+    roi: tuple = None,
+    origin: tuple = None,
+):
     """
     Crop the map
 
     Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        roi (list): The region of interest
-        origin (list): The origin
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        roi: The region of interest
+        origin: The origin
 
     """
 

@@ -7,59 +7,36 @@
 # which is included in the root directory of this package.
 #
 import logging
-import numpy
+import numpy as np
+from functools import singledispatch
 from maptools.util import read, write
+
+
+__all__ = ["threshold"]
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def array_threshold(data, threshold=0, normalize=False, zero=True):
-    """
-    Threshold the map
-
-    Args:
-        data (array): The input data
-        threshold (float): The threshold value
-        normalize (bool): Normalize the map before thresholding
-        zero (bool): Shift the data to zero
-
-    Returns:
-        array: The thresholded array
-
-    """
-
-    # Apply the threshold
-    logger.info("Apply threshold %f" % threshold)
-    if normalize:
-        data = (data - numpy.mean(data)) / numpy.std(data)
-    mask = data >= threshold
-    data[~mask] = threshold
-    if zero:
-        data -= threshold
-
-    # Return the data
-    return data, mask
-
-
-def mapfile_threshold(
+@singledispatch
+def threshold(
     input_map_filename,
-    output_map_filename,
-    output_mask_filename=None,
-    threshold=0,
-    normalize=False,
-    zero=True,
+    output_map_filename: str,
+    output_mask_filename: str = None,
+    threshold: float = 0,
+    normalize: bool = False,
+    zero: bool = True,
 ):
     """
     Threshold the map
 
     Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        threshold (float): The threshold value
-        normalize (bool): Normalize the map before thresholding
-        zero (bool): Shift the data to zero
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        threshold: The threshold value
+        normalize: Normalize the map before thresholding
+        zero: Shift the data to zero
 
     """
 
@@ -82,13 +59,32 @@ def mapfile_threshold(
         write(output_mask_filename, mask.astype("uint8"), infile=infile)
 
 
-def threshold(*args, **kwargs):
+@threshold.register
+def _threshold_ndarray(
+    data: np.ndarray, threshold: float = 0, normalize: bool = False, zero: bool = True
+) -> np.ndarray:
     """
     Threshold the map
 
+    Args:
+        data: The input data
+        threshold: The threshold value
+        normalize: Normalize the map before thresholding
+        zero: Shift the data to zero
+
+    Returns:
+        The thresholded array
+
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
-        func = mapfile_threshold
-    else:
-        func = array_threshold
-    return func(*args, **kwargs)
+
+    # Apply the threshold
+    logger.info("Apply threshold %f" % threshold)
+    if normalize:
+        data = (data - np.mean(data)) / np.std(data)
+    mask = data >= threshold
+    data[~mask] = threshold
+    if zero:
+        data -= threshold
+
+    # Return the data
+    return data, mask

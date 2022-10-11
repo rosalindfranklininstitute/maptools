@@ -8,9 +8,12 @@
 #
 import gemmi
 import logging
-import numpy
+import numpy as np
 import scipy.ndimage.morphology
 from maptools.util import write
+
+
+__all__ = ["genmask"]
 
 
 # Get the logger
@@ -41,7 +44,7 @@ def genmask(
     """
 
     # Create the mask
-    mask = numpy.ones(shape, dtype="bool")
+    mask = np.ones(shape, dtype="bool")
 
     # Add a border
     mask[:border, :, :] = 0
@@ -58,7 +61,7 @@ def genmask(
         structure = gemmi.read_structure(input_pdb_filename)
 
         # Get the coordinates
-        coords = numpy.array(
+        coords = np.array(
             [
                 (atom.pos.z, atom.pos.y, atom.pos.x)
                 for model in structure
@@ -74,8 +77,8 @@ def genmask(
         logger.info("Min / Max Z: %f / %f" % (coords[0].min(), coords[0].max()))
 
         # Convert to indices
-        index = numpy.floor(coords / voxel_size).astype("int32")
-        atoms = numpy.ones(shape)
+        index = np.floor(coords / voxel_size).astype("int32")
+        atoms = np.ones(shape)
         atoms[index[0], index[1], index[2]] = 0
 
         # Compute distance and update mask
@@ -90,7 +93,7 @@ def genmask(
         distance = scipy.ndimage.morphology.distance_transform_edt(
             ~mask, sampling=voxel_size
         )
-        mask = numpy.exp(-0.5 * distance**2 / sigma**2)
+        mask = np.exp(-0.5 * distance**2 / sigma**2)
 
     # Write the output file
     outfile = write(output_mask_filename, mask.astype("float32"))

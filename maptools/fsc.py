@@ -7,13 +7,17 @@
 # which is included in the root directory of this package.
 #
 import logging
-import numpy
+import numpy as np
 import scipy.ndimage
 import yaml
+from functools import singledispatch
 from matplotlib import pylab, ticker
 from maptools.util import read, read_axis_order
 from maptools.reorder import reorder
 from math import sqrt
+
+
+__all__ = ["fsc"]
 
 
 # Get the logger
@@ -45,135 +49,16 @@ def resolution_from_fsc(bins, fsc, value=0.5):
     return bin_index, bin_value, fsc_value
 
 
-def array_fsc(
-    data1,
-    data2,
-    nbins=20,
-    resolution=None,
-    voxel_size=(1, 1, 1),
-    axis=None,
-    method="binned",
-    **kwargs
-):
-    """
-    Compute the local FSC of the map
-
-    Args:
-        data1 (array): The input map 1
-        data2 (array): The input map 2
-        nbins (int): The number of bins
-        resolution (float): The resolution limit
-        axis (tuple): The axis of the plane to compute the FSC
-        method (str): Method to use (binned or averaged)
-
-    Returns:
-        array: The FSC
-
-    """
-    # Check the axis
-    if type(axis) in [int, float]:
-        axis = (axis,)
-
-    # Get the subset of data
-    logger.info("Computing FSC")
-
-    # Average along the remaining axes
-    if axis is not None:
-        assert all(a in (0, 1, 2) for a in axis)
-        voxel_size = tuple(voxel_size[a] for a in axis)
-        axis = tuple(set((0, 1, 2)).difference(axis))
-        data1 = numpy.mean(data1, axis=axis)
-        data2 = numpy.mean(data2, axis=axis)
-
-    # Check voxel size
-    voxel_size = tuple(v if v > 0 else 1 for v in voxel_size)
-
-    # Normalize the data
-    data1 = (data1 - numpy.mean(data1)) / numpy.std(data1)
-    data2 = (data2 - numpy.mean(data2)) / numpy.std(data2)
-
-    # Compute the radius
-    shape = data1.shape
-    indices = [
-        (1 / v) * (numpy.arange(s) - s // 2) / s for s, v in zip(shape, voxel_size)
-    ]
-    R = numpy.fft.fftshift(
-        numpy.sum(numpy.array(numpy.meshgrid(*indices, indexing="ij")) ** 2, axis=0)
-    )
-
-    # Compute the FFT of the data
-    X = numpy.fft.fftn(data1)
-    Y = numpy.fft.fftn(data2)
-
-    # Flatten the array
-    X = X.flatten()
-    Y = Y.flatten()
-    R = R.flatten()
-
-    # Get the max resolution
-    max_resolution = 1.0 / sqrt(R.max())
-
-    # Create a resolution mask
-    if resolution is not None:
-        if resolution < max_resolution:
-            resolution = max_resolution
-        mask = R < 1.0 / resolution**2
-        X = X[mask]
-        Y = Y[mask]
-        R = R[mask]
-    else:
-        resolution = max_resolution
-
-    # Multiply X and Y together
-    XX = numpy.abs(X) ** 2
-    YY = numpy.abs(Y) ** 2
-    XY = numpy.real(X * numpy.conj(Y))
-
-    # Compute local variance and covariance by binning with resolution
-    if method == "binned":
-        bin_index = numpy.floor(nbins * R * resolution**2).astype("int32")
-        N = numpy.bincount(bin_index)
-        varX = numpy.bincount(bin_index, XX)
-        varY = numpy.bincount(bin_index, YY)
-        covXY = numpy.bincount(bin_index, XY)
-    elif method == "averaged":
-        bin_index = numpy.floor((sum(shape) // 2) * R * resolution**2).astype("int32")
-        N = numpy.bincount(bin_index)
-        varX = numpy.bincount(bin_index, XX)
-        varY = numpy.bincount(bin_index, YY)
-        covXY = numpy.bincount(bin_index, XY)
-        N = scipy.ndimage.uniform_filter(N, size=nbins, mode="nearest")
-        varX = scipy.ndimage.uniform_filter(varX, size=nbins, mode="nearest")
-        varY = scipy.ndimage.uniform_filter(varY, size=nbins, mode="nearest")
-        covXY = scipy.ndimage.uniform_filter(covXY, size=nbins, mode="nearest")
-    else:
-        raise RuntimeError('Expected "binned" or "averaged", got %s' % method)
-
-    # Compute the FSC
-    tiny = 1e-5
-    mask = (varX > tiny) & (varY > tiny)
-    fsc = numpy.zeros(covXY.shape)
-    fsc[mask] = covXY[mask] / (numpy.sqrt(varX[mask]) * numpy.sqrt(varY[mask]))
-    bins = (1 / resolution**2) * numpy.arange(1, covXY.size + 1) / (covXY.size)
-
-    # Print some output
-    logger.info("Resolution, FSC")
-    for b, f in zip(bins, fsc):
-        logger.info("%.2f, %.2f" % (1 / sqrt(b), f))
-
-    # Return the fsc
-    return bins, N, fsc
-
-
-def mapfile_fsc(
+@singledispatch
+def fsc(
     input_map_filename1,
-    input_map_filename2,
-    output_plot_filename=None,
-    output_data_filename=None,
-    nbins=20,
-    resolution=None,
-    axis=None,
-    method="binned",
+    input_map_filename2: str,
+    output_plot_filename: str = None,
+    output_data_filename: str = None,
+    nbins: int = 20,
+    resolution: float = None,
+    axis: tuple = None,
+    method: str = "binned",
 ):
     """
     Compute the local FSC of the map
@@ -223,7 +108,7 @@ def mapfile_fsc(
         )
 
         # Compute the FSC average
-        fsc_average = float(numpy.sum(num * fsc) / numpy.sum(num))
+        fsc_average = float(np.sum(num * fsc) / np.sum(num))
         logger.info("FSC average: %g" % fsc_average)
 
         # Compute the resolution
@@ -278,13 +163,119 @@ def mapfile_fsc(
     return results
 
 
-def fsc(*args, **kwargs):
+@fsc.register
+def _fsc_ndarray(
+    data1: np.ndarray,
+    data2: np.ndarray,
+    nbins: int = 20,
+    resolution: float = None,
+    voxel_size: tuple = (1, 1, 1),
+    axis: tuple = None,
+    method: str = "binned",
+) -> tuple:
     """
-    Compute the FSC of the map
+    Compute the local FSC of the map
+
+    Args:
+        data1 (array): The input map 1
+        data2 (array): The input map 2
+        nbins (int): The number of bins
+        resolution (float): The resolution limit
+        axis (tuple): The axis of the plane to compute the FSC
+        method (str): Method to use (binned or averaged)
+
+    Returns:
+        array: The FSC
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename1" in kwargs:
-        func = mapfile_fsc
+    # Check the axis
+    if type(axis) in [int, float]:
+        axis = (axis,)
+
+    # Get the subset of data
+    logger.info("Computing FSC")
+
+    # Average along the remaining axes
+    if axis is not None:
+        assert all(a in (0, 1, 2) for a in axis)
+        voxel_size = tuple(voxel_size[a] for a in axis)
+        axis = tuple(set((0, 1, 2)).difference(axis))
+        data1 = np.mean(data1, axis=axis)
+        data2 = np.mean(data2, axis=axis)
+
+    # Check voxel size
+    voxel_size = tuple(v if v > 0 else 1 for v in voxel_size)
+
+    # Normalize the data
+    data1 = (data1 - np.mean(data1)) / np.std(data1)
+    data2 = (data2 - np.mean(data2)) / np.std(data2)
+
+    # Compute the radius
+    shape = data1.shape
+    indices = [(1 / v) * (np.arange(s) - s // 2) / s for s, v in zip(shape, voxel_size)]
+    R = np.fft.fftshift(
+        np.sum(np.array(np.meshgrid(*indices, indexing="ij")) ** 2, axis=0)
+    )
+
+    # Compute the FFT of the data
+    X = np.fft.fftn(data1)
+    Y = np.fft.fftn(data2)
+
+    # Flatten the array
+    X = X.flatten()
+    Y = Y.flatten()
+    R = R.flatten()
+
+    # Get the max resolution
+    max_resolution = 1.0 / sqrt(R.max())
+
+    # Create a resolution mask
+    if resolution is not None:
+        if resolution < max_resolution:
+            resolution = max_resolution
+        mask = R < 1.0 / resolution**2
+        X = X[mask]
+        Y = Y[mask]
+        R = R[mask]
     else:
-        func = array_fsc
-    return func(*args, **kwargs)
+        resolution = max_resolution
+
+    # Multiply X and Y together
+    XX = np.abs(X) ** 2
+    YY = np.abs(Y) ** 2
+    XY = np.real(X * np.conj(Y))
+
+    # Compute local variance and covariance by binning with resolution
+    if method == "binned":
+        bin_index = np.floor(nbins * R * resolution**2).astype("int32")
+        N = np.bincount(bin_index)
+        varX = np.bincount(bin_index, XX)
+        varY = np.bincount(bin_index, YY)
+        covXY = np.bincount(bin_index, XY)
+    elif method == "averaged":
+        bin_index = np.floor((sum(shape) // 2) * R * resolution**2).astype("int32")
+        N = np.bincount(bin_index)
+        varX = np.bincount(bin_index, XX)
+        varY = np.bincount(bin_index, YY)
+        covXY = np.bincount(bin_index, XY)
+        N = scipy.ndimage.uniform_filter(N, size=nbins, mode="nearest")
+        varX = scipy.ndimage.uniform_filter(varX, size=nbins, mode="nearest")
+        varY = scipy.ndimage.uniform_filter(varY, size=nbins, mode="nearest")
+        covXY = scipy.ndimage.uniform_filter(covXY, size=nbins, mode="nearest")
+    else:
+        raise RuntimeError('Expected "binned" or "averaged", got %s' % method)
+
+    # Compute the FSC
+    tiny = 1e-5
+    mask = (varX > tiny) & (varY > tiny)
+    fsc = np.zeros(covXY.shape)
+    fsc[mask] = covXY[mask] / (np.sqrt(varX[mask]) * np.sqrt(varY[mask]))
+    bins = (1 / resolution**2) * np.arange(1, covXY.size + 1) / (covXY.size)
+
+    # Print some output
+    logger.info("Resolution, FSC")
+    for b, f in zip(bins, fsc):
+        logger.info("%.2f, %.2f" % (1 / sqrt(b), f))
+
+    # Return the fsc
+    return bins, N, fsc

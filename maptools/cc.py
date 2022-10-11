@@ -7,58 +7,32 @@
 # which is included in the root directory of this package.
 #
 import logging
-import numpy
+import numpy as np
+from functools import singledispatch
 from maptools.util import read, write, read_axis_order
 from maptools.reorder import reorder
+
+
+__all__ = ["cc"]
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def array_cc(data1, data2=None, **kwargs):
+@singledispatch
+def cc(
+    input_map_filename1,
+    input_map_filename2: str = None,
+    output_map_filename: str = None,
+):
     """
     Compute the CC between two maps
 
     Args:
-        data1 (array): The input map 1
-        data2 (array): The input map 2
-
-    Returns:
-        array: The CC
-
-    """
-
-    # Compute the Fourier transform of the data
-    fdata1 = numpy.fft.fftn((data1 - numpy.mean(data1)) / numpy.std(data1))
-
-    # Transform data2
-    if data2 is not None:
-        fdata2 = numpy.fft.fftn((data2 - numpy.mean(data2)) / numpy.std(data2))
-    else:
-        fdata2 = fdata1
-
-    # Compute the CC
-    cc = (
-        numpy.fft.fftshift(numpy.real(numpy.fft.ifftn(fdata1 * numpy.conj(fdata2))))
-        / fdata1.size
-    )
-
-    # Print some output
-    logger.info("Min CC = %f, Max CC = %f" % (cc.min(), cc.max()))
-
-    # Return the CC
-    return cc
-
-
-def mapfile_cc(input_map_filename1, input_map_filename2=None, output_map_filename=None):
-    """
-    Compute the CC between two maps
-
-    Args:
-        input_map_filename1 (str): The input map filename
-        input_map_filename2 (str): The input map filename
-        output_map_filename (str): The output cc filename
+        input_map_filename1: The input map filename
+        input_map_filename2: The input map filename
+        output_map_filename: The output cc filename
 
     """
 
@@ -75,19 +49,40 @@ def mapfile_cc(input_map_filename1, input_map_filename2=None, output_map_filenam
         data2 = None
 
     # Compute the cc
-    cc = array_cc(data1, data2)
+    cc = _cc_ndarray(data1, data2)
 
     # Write the output file
     write(output_map_filename, cc.astype("float32"), infile=infile1)
 
 
-def cc(*args, **kwargs):
+@cc.register
+def _cc_ndarray(data1: np.ndarray, data2: np.ndarray = None) -> np.ndarray:
     """
     Compute the CC between two maps
 
+    Args:
+        data1: The input map 1
+        data2: The input map 2
+
+    Returns:
+        array: The CC
+
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename1" in kwargs:
-        func = mapfile_cc
+
+    # Compute the Fourier transform of the data
+    fdata1 = np.fft.fftn((data1 - np.mean(data1)) / np.std(data1))
+
+    # Transform data2
+    if data2 is not None:
+        fdata2 = np.fft.fftn((data2 - np.mean(data2)) / np.std(data2))
     else:
-        func = array_cc
-    return func(*args, **kwargs)
+        fdata2 = fdata1
+
+    # Compute the CC
+    cc = np.fft.fftshift(np.real(np.fft.ifftn(fdata1 * np.conj(fdata2)))) / fdata1.size
+
+    # Print some output
+    logger.info("Min CC = %f, Max CC = %f" % (cc.min(), cc.max()))
+
+    # Return the CC
+    return cc

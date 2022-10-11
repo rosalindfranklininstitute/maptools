@@ -10,18 +10,21 @@ import logging
 from maptools.util import read
 
 
+__all__ = ["edit"]
+
+
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def edit(input_map_filename, voxel_size=None, origin=None):
+def edit(input_map_filename: str, voxel_size: tuple = None, origin: tuple = None):
     """
     Crop the map
 
     Args:
-        input_filename (str): The input map filename
-        voxel_size (list): The voxel size
-        origin (list): The origin
+        input_filename: The input map filename
+        voxel_size: The voxel size
+        origin: The origin
 
     """
 

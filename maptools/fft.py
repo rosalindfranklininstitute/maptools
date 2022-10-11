@@ -7,24 +7,33 @@
 # which is included in the root directory of this package.
 #
 import logging
-import numpy
+import numpy as np
 from maptools.util import read, write
+
+
+__all__ = ["fft"]
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def fft(input_map_filename, output_map_filename, mode=None, shift=True, normalize=True):
+def fft(
+    input_map_filename: str,
+    output_map_filename: str,
+    mode: str = None,
+    shift: bool = True,
+    normalize: bool = True,
+):
     """
     Compute the FFT of the map
 
     Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        mode (str): The component to output
-        shift (bool): Shift the fourier components
-        normalize (bool): Normalize before computing FFT
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        mode: The component to output
+        shift: Shift the fourier components
+        normalize: Normalize before computing FFT
 
     """
 
@@ -39,20 +48,20 @@ def fft(input_map_filename, output_map_filename, mode=None, shift=True, normaliz
 
     # Normalize if necessary
     if normalize:
-        data = (data - numpy.mean(data)) / numpy.std(data)
+        data = (data - np.mean(data)) / np.std(data)
 
     # Compute FFT
     data = {
-        "real": lambda x: numpy.real(x),
-        "imaginary": lambda x: numpy.imag(x),
-        "amplitude": lambda x: numpy.abs(x),
-        "phase": lambda x: numpy.angle(x),
-        "power": lambda x: numpy.abs(x) ** 2,
-    }[mode](numpy.fft.fftn(data).astype("complex64"))
+        "real": lambda x: np.real(x),
+        "imaginary": lambda x: np.imag(x),
+        "amplitude": lambda x: np.abs(x),
+        "phase": lambda x: np.angle(x),
+        "power": lambda x: np.abs(x) ** 2,
+    }[mode](np.fft.fftn(data).astype("complex64"))
 
     # Shift if necessary
     if shift:
-        data = numpy.fft.fftshift(data)
+        data = np.fft.fftshift(data)
 
     # Write the output file
     write(output_map_filename, data, infile=infile)

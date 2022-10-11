@@ -8,38 +8,90 @@
 #
 
 import logging
-import numpy
+import numpy as np
+from functools import singledispatch
 from maptools.util import read, write
+
+
+__all__ = ["rescale"]
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def array_rescale(
-    data, mean=None, sdev=None, vmin=None, vmax=None, scale=None, offset=None
+@singledispatch
+def rescale(
+    input_map_filename,
+    output_map_filename: str,
+    mean: str = None,
+    sdev: str = None,
+    vmin: str = None,
+    vmax: str = None,
+    scale: str = None,
+    offset: str = None,
 ):
     """
     Rescale the map
 
     Args:
-        data (array): The input map
-        mean (float): The desired mean value
-        sdev (float): The desired sdev value
-        vmin (float): The desired min value
-        vmax (float): The desired max value
-        scale (float): The scale
-        offset (float): The offset
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        mean: The desired mean value
+        sdev: The desired sdev value
+        vmin: The desired min value
+        vmax: The desired max value
+        scale: The scale
+        offset: The offset
+
+    """
+
+    # Open the input file
+    infile = read(input_map_filename)
+
+    # Get the data
+    data = infile.data
+
+    # Rescale the map
+    data = _rescale_ndarray(
+        data, mean=mean, sdev=sdev, vmin=vmin, vmax=vmax, scale=scale, offset=offset
+    )
+
+    # Write the output file
+    write(output_map_filename, data, infile=infile)
+
+
+@rescale.register
+def _rescale_ndarray(
+    data: np.ndarray,
+    mean: float = None,
+    sdev: float = None,
+    vmin: float = None,
+    vmax: float = None,
+    scale: float = None,
+    offset: float = None,
+) -> np.ndarray:
+    """
+    Rescale the map
+
+    Args:
+        data: The input map
+        mean: The desired mean value
+        sdev: The desired sdev value
+        vmin: The desired min value
+        vmax: The desired max value
+        scale: The scale
+        offset: The offset
 
     Returns:
-        array: The output map
+        The output map
 
     """
 
     # Normalize by mean and standard deviation
     if mean is not None or sdev is not None:
-        original_mean = numpy.mean(data)
-        original_sdev = numpy.std(data)
+        original_mean = np.mean(data)
+        original_sdev = np.std(data)
         if mean is None:
             mean = original_mean
         if sdev is None:
@@ -49,8 +101,8 @@ def array_rescale(
 
     # Normalize by min and max
     if vmin is not None or vmax is not None:
-        original_min = numpy.min(data)
-        original_max = numpy.max(data)
+        original_min = np.min(data)
+        original_max = np.max(data)
         if vmin is None:
             vmin = original_mean
         if vmax is None:
@@ -69,60 +121,8 @@ def array_rescale(
     data = data * scale + offset
     logger.info(
         "Data min = %g, max = %g, mean = %g, sdev = %g"
-        % (data.min(), data.max(), numpy.mean(data), numpy.std(data))
+        % (data.min(), data.max(), np.mean(data), np.std(data))
     )
 
     # Return the rescaled map
     return data
-
-
-def mapfile_rescale(
-    input_map_filename,
-    output_map_filename,
-    mean=None,
-    sdev=None,
-    vmin=None,
-    vmax=None,
-    scale=None,
-    offset=None,
-):
-    """
-    Rescale the map
-
-    Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        mean (float): The desired mean value
-        sdev (float): The desired sdev value
-        vmin (float): The desired min value
-        vmax (float): The desired max value
-        scale (float): The scale
-        offset (float): The offset
-
-    """
-
-    # Open the input file
-    infile = read(input_map_filename)
-
-    # Get the data
-    data = infile.data
-
-    # Rescale the map
-    data = array_rescale(
-        data, mean=mean, sdev=sdev, vmin=vmin, vmax=vmax, scale=scale, offset=offset
-    )
-
-    # Write the output file
-    write(output_map_filename, data, infile=infile)
-
-
-def rescale(*args, **kwargs):
-    """
-    Rescale the map
-
-    """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
-        func = mapfile_rescale
-    else:
-        func = array_rescale
-    return func(*args, **kwargs)

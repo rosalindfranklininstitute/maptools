@@ -7,93 +7,40 @@
 # which is included in the root directory of this package.
 #
 import logging
-import numpy
+import numpy as np
 import scipy.ndimage
 import scipy.spatial.transform
 from math import pi
+from functools import singledispatch
 from maptools.util import read, write, read_axis_order
+
+
+__all__ = ["transform"]
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-def array_transform(
-    data,
-    axis_order=(0, 1, 2),
-    offset=None,
-    rotation=(0, 0, 0),
-    translation=(0, 0, 0),
-    deg=False,
-):
-    """
-    Transform the map
-
-    Args:
-        data (array): The data to transform
-        offset = (array): The offset to rotate about
-        rotation (array): The rotation vector
-        translation (array): The translation vector
-        deg (bool): Is the rotation in degrees
-
-    Returns:
-        array: The transformed data
-
-    """
-    assert tuple(sorted(axis_order)) == (0, 1, 2)
-
-    # Set the offset
-    if offset is None:
-        offset = numpy.array(data.shape) / 2
-    else:
-        offset = numpy.array(offset)
-        offset = offset[axis_order]
-
-    # Reorder input vectors
-    translation = numpy.array(translation)[axis_order]
-    rotation = numpy.array(rotation)[axis_order]
-
-    # If the rotation is in degrees transform
-    if deg:
-        rotation = numpy.array(rotation) * pi / 180
-
-    # Create the rotation matrix
-    rotation = scipy.spatial.transform.Rotation.from_rotvec(rotation).as_matrix()
-    O = numpy.diag((1.0, 1.0, 1.0, 1.0))
-    T = numpy.diag((1.0, 1.0, 1.0, 1.0))
-    T[0:3, 0:3] = rotation
-    T[0:3, 3] = translation
-    O[0:3, 3] = offset
-    matrix = numpy.matmul(O, numpy.matmul(T, numpy.linalg.inv(O)))
-
-    # Do the transformation
-    logger.info("Performing transformation")
-    logger.info("matrix=")
-    logger.info(matrix)
-    data = scipy.ndimage.affine_transform(data, numpy.linalg.inv(matrix))
-
-    # Return the transformed data
-    return data
-
-
-def mapfile_transform(
+@singledispatch
+def transform(
     input_map_filename,
-    output_map_filename,
-    offset=None,
-    rotation=(0, 0, 0),
-    translation=(0, 0, 0),
-    deg=False,
+    output_map_filename: str,
+    offset: tuple = None,
+    rotation: tuple = (0, 0, 0),
+    translation: tuple = (0, 0, 0),
+    deg: bool = False,
 ):
     """
     Transform the map
 
     Args:
-        input_map_filename (str): The input map filename
-        output_map_filename (str): The output map filename
-        offset = (array): The offset to rotate about
-        rotation (array): The rotation vector
-        translation (array): The translation vector
-        deg (bool): Is the rotation in degrees
+        input_map_filename: The input map filename
+        output_map_filename: The output map filename
+        offset: The offset to rotate about
+        rotation: The rotation vector
+        translation: The translation vector
+        deg: Is the rotation in degrees
 
     """
 
@@ -107,7 +54,7 @@ def mapfile_transform(
     data = infile.data
 
     # Do the transform
-    data = array_transform(
+    data = _transform_ndarray(
         data,
         axis_order=axis_order,
         offset=offset,
@@ -120,13 +67,60 @@ def mapfile_transform(
     write(output_map_filename, data, infile=infile)
 
 
-def transform(*args, **kwargs):
+@transform.register
+def _transform_ndarray(
+    data: np.ndarray,
+    axis_order: tuple = (0, 1, 2),
+    offset: tuple = None,
+    rotation: tuple = (0, 0, 0),
+    translation: tuple = (0, 0, 0),
+    deg: bool = False,
+) -> np.ndarray:
     """
-    Transform the data
+    Transform the map
+
+    Args:
+        data: The data to transform
+        offset: The offset to rotate about
+        rotation: The rotation vector
+        translation: The translation vector
+        deg: Is the rotation in degrees
+
+    Returns:
+        array: The transformed data
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
-        func = mapfile_transform
+    assert tuple(sorted(axis_order)) == (0, 1, 2)
+
+    # Set the offset
+    if offset is None:
+        offset = np.array(data.shape) / 2
     else:
-        func = array_transform
-    return func(*args, **kwargs)
+        offset = np.array(offset)
+        offset = offset[axis_order]
+
+    # Reorder input vectors
+    translation = np.array(translation)[axis_order]
+    rotation = np.array(rotation)[axis_order]
+
+    # If the rotation is in degrees transform
+    if deg:
+        rotation = np.array(rotation) * pi / 180
+
+    # Create the rotation matrix
+    rotation = scipy.spatial.transform.Rotation.from_rotvec(rotation).as_matrix()
+    O = np.diag((1.0, 1.0, 1.0, 1.0))
+    T = np.diag((1.0, 1.0, 1.0, 1.0))
+    T[0:3, 0:3] = rotation
+    T[0:3, 3] = translation
+    O[0:3, 3] = offset
+    matrix = np.matmul(O, np.matmul(T, np.linalg.inv(O)))
+
+    # Do the transformation
+    logger.info("Performing transformation")
+    logger.info("matrix=")
+    logger.info(matrix)
+    data = scipy.ndimage.affine_transform(data, np.linalg.inv(matrix))
+
+    # Return the transformed data
+    return data

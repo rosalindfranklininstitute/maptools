@@ -7,61 +7,21 @@
 # which is included in the root directory of this package.
 #
 import logging
-import numpy
+import numpy as np
 import scipy.signal
 from maptools.util import read, write
+from functools import singledispatch
+
+
+__all__ = ["rebin"]
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
-# def array_rebin(data, shape):
-#    """
-#    Rebin a multidimensional array
-#
-#    Args:
-#        data (array): The input array
-#        shape (tuple): The new shape
-#
-#    """
-#
-#    # Ensure dimensions are consistent
-#    assert data.ndim == len(shape)
-#    assert data.shape[0] % shape[0] == 0
-#    assert data.shape[1] % shape[1] == 0
-#    assert data.shape[2] % shape[2] == 0
-#
-#    # Get pairs of (shape, bin factor) for each dimension
-#    factors = numpy.array([(d, c // d) for d, c in zip(shape, data.shape)])
-#
-#    # Rebin the array
-#    data = data.reshape(factors.flatten())
-#    for i in range(len(shape)):
-#        data = data.sum(-1 * (i + 1))
-#    return data
-def array_rebin(data, shape):
-    """
-    Rebin a multidimensional array
-
-    Args:
-        data (array): The input array
-        shape (tuple): The new shape
-
-    """
-    # Get pairs of (shape, bin factor) for each dimension
-    factors = numpy.array([(d, c // d) for d, c in zip(shape, data.shape)])
-
-    # Rebin the array
-    for i in range(len(factors)):
-        data = scipy.signal.decimate(data, factors[i][1], axis=i)
-    # data = data.reshape(factors.flatten())
-    # for i in range(len(shape)):
-    #     data = data.sum(-1 * (i + 1))
-    return data
-
-
-def mapfile_rebin(input_map_filename, output_map_filename, shape=None):
+@singledispatch
+def rebin(input_map_filename, output_map_filename: str, shape: tuple = None):
     """
     Rebin the map
 
@@ -93,13 +53,50 @@ def mapfile_rebin(input_map_filename, output_map_filename, shape=None):
     )
 
 
-def rebin(*args, **kwargs):
+# @rebin.register
+# def _rebin_ndarray(data, shape):
+#    """
+#    Rebin a multidimensional array
+#
+#    Args:
+#        data (array): The input array
+#        shape (tuple): The new shape
+#
+#    """
+#
+#    # Ensure dimensions are consistent
+#    assert data.ndim == len(shape)
+#    assert data.shape[0] % shape[0] == 0
+#    assert data.shape[1] % shape[1] == 0
+#    assert data.shape[2] % shape[2] == 0
+#
+#    # Get pairs of (shape, bin factor) for each dimension
+#    factors = np.array([(d, c // d) for d, c in zip(shape, data.shape)])
+#
+#    # Rebin the array
+#    data = data.reshape(factors.flatten())
+#    for i in range(len(shape)):
+#        data = data.sum(-1 * (i + 1))
+#    return data
+
+
+@rebin.register
+def _rebin_ndarray(data: np.ndarray, shape: tuple):
     """
-    Rebin the map
+    Rebin a multidimensional array
+
+    Args:
+        data: The input array
+        shape: The new shape
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
-        func = mapfile_rebin
-    else:
-        func = array_rebin
-    return func(*args, **kwargs)
+    # Get pairs of (shape, bin factor) for each dimension
+    factors = np.array([(d, c // d) for d, c in zip(shape, data.shape)])
+
+    # Rebin the array
+    for i in range(len(factors)):
+        data = scipy.signal.decimate(data, factors[i][1], axis=i)
+    # data = data.reshape(factors.flatten())
+    # for i in range(len(shape)):
+    #     data = data.sum(-1 * (i + 1))
+    return data
