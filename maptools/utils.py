@@ -1,10 +1,10 @@
-import numpy
+import numpy as np
 
 from maptools.models import Orientation, _axes, _raxes
 
 
-def get_vol(cols, rows, sects, dtype=numpy.uint8):
-    return numpy.empty(shape=(cols, rows, sects), dtype=dtype)
+def get_vol(cols, rows, sects, dtype=np.uint8):
+    return np.empty(shape=(cols, rows, sects), dtype=dtype)
 
 
 def change_orientation(axes, vol):
@@ -12,19 +12,19 @@ def change_orientation(axes, vol):
     if axes == (1, 2, 3):
         return vol
     elif axes == (3, 2, 1):
-        return numpy.swapaxes(vol, 0, 2)
+        return np.swapaxes(vol, 0, 2)
     elif axes == (2, 1, 3):
-        return numpy.swapaxes(vol, 0, 1)
+        return np.swapaxes(vol, 0, 1)
     elif axes == (1, 3, 2):
-        return numpy.swapaxes(vol, 1, 2)
+        return np.swapaxes(vol, 1, 2)
     elif axes == (3, 1, 2):
         # double
-        inter_vol = numpy.swapaxes(vol, 0, 1)
-        return numpy.swapaxes(inter_vol, 0, 2)
+        inter_vol = np.swapaxes(vol, 0, 1)
+        return np.swapaxes(inter_vol, 0, 2)
     elif axes == (2, 3, 1):
         # double
-        inter_vol = numpy.swapaxes(vol, 0, 1)
-        return numpy.swapaxes(inter_vol, 1, 2)
+        inter_vol = np.swapaxes(vol, 0, 1)
+        return np.swapaxes(inter_vol, 1, 2)
 
 
 def get_orientation(mapfile):
@@ -53,7 +53,7 @@ def set_orientation(mrc, orientation: Orientation):
     # rotate the volume
     current_orientation = get_orientation(mrc)
     permutation_matrix = current_orientation / orientation
-    new_shape = numpy.array(mrc.data.shape) @ permutation_matrix
+    new_shape = np.array(mrc.data.shape) @ permutation_matrix
     mrc.set_data(mrc.data.reshape(new_shape))
     return mrc
 
