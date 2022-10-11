@@ -8,7 +8,7 @@ def test_rebin(ideal_map_filename):
     _, output_map_filename = tempfile.mkstemp()
 
     maptools.rebin(
-        input_map_filename=ideal_map_filename,
+        ideal_map_filename,
         output_map_filename=output_map_filename,
         shape=(25, 25, 25),
     )

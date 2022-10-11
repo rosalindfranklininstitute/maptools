@@ -15,12 +15,12 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def read(filename, mode="r"):
+def read(filename: str, mode: str = "r"):
     """
     Read the input map file
 
     Args:
-        filename (str): The map filename
+        filename: The map filename
 
     Return
         object: The map file
@@ -30,13 +30,13 @@ def read(filename, mode="r"):
     return mrcfile.mmap(filename, mode=mode)
 
 
-def write(filename, data, infile=None):
+def write(filename: str, data: np.ndarray, infile=None):
     """
     Write the output map file
 
     Args:
-        filename (str): The map filename
-        data (object): The data to write
+        filename: The map filename
+        data: The data to write
         infile (object): The input file
 
     """

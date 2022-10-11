@@ -10,7 +10,7 @@ def test_rotate(ideal_map_filename):
         _, output_map_filename = tempfile.mkstemp()
 
         maptools.rotate(
-            input_map_filename=ideal_map_filename,
+            ideal_map_filename,
             output_map_filename=output_map_filename,
             axes=axes,
         )
