@@ -23,7 +23,7 @@ class TestMapFile(unittest.TestCase):
             os.remove(self.test_fn)
         except FileNotFoundError:
             print(
-                f"test.map already deleted or not used in this test...", file=sys.stderr
+                "test.map already deleted or not used in this test...", file=sys.stderr
             )
         try:
             os.remove(self.test_fn2)

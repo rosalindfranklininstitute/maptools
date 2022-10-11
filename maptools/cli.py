@@ -219,7 +219,7 @@ cc_parser = operation_subparser.add_parser(
     help="compute auto/crosscorrelation",
     parents=[parent_parser],
 )
-cc_parser.add_argument("test")  #
+cc_parser.add_argument("test")
 
 
 def parse_args():
@@ -232,27 +232,28 @@ def parse_args():
     if args.command == "create":
         if args.orientation is None:
             print(
-                Styled(
-                    f"[[ '[error] required -O/--orientation flag missing'|fg-red ]]"
-                ),
+                Styled("[[ '[error] required -O/--orientation flag missing'|fg-red ]]"),
                 file=sys.stderr,
             )
             args.command = None
         if args.map_mode is None:
             print(
-                Styled(f"[[ '[error] required -M/--map-mode flag missing'|fg-red ]]"),
+                Styled("[[ '[error] required -M/--map-mode flag missing'|fg-red ]]"),
                 file=sys.stderr,
             )
             args.command = None
         if args.voxel_sizes is None:
             print(
-                Styled(f"[[ '[error] required -V/--voxel-size flag missing'|fg-red ]]"),
+                Styled("[[ '[error] required -V/--voxel-size flag missing'|fg-red ]]"),
                 file=sys.stderr,
             )
             args.command = None
     elif args.command == "edit":
         if args.output is not None:
-            args.label = f"{datetime.datetime.now().strftime('%d/%m/%y %H:%M')} - copied from {pathlib.Path(args.file).name} with maptools"
+            args.label = (
+                f"{datetime.datetime.now().strftime('%d/%m/%y %H:%M')} - copied from "
+                f"{pathlib.Path(args.file).name} with maptools"
+            )
     return args
 
 

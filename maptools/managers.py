@@ -1,7 +1,7 @@
 import os
 import sys
 
-import numpy as np
+import numpy
 from styled import Styled
 
 from maptools import models
@@ -69,15 +69,15 @@ def create(args):
                 file=sys.stderr,
             )
         if args.voxel_values == "zeros":
-            mapfile.data = np.zeros(args.size[::-1])
+            mapfile.data = numpy.zeros(args.size[::-1])
         elif args.voxel_values == "ones":
-            mapfile.data = np.ones(args.size[::-1])
+            mapfile.data = numpy.ones(args.size[::-1])
         elif args.voxel_values == "empty":
-            mapfile.data = np.empty(args.size[::-1])
+            mapfile.data = numpy.empty(args.size[::-1])
         elif args.voxel_values == "randint":
-            mapfile.data = np.random.randint(args.min, args.max, args.size[::-1])
+            mapfile.data = numpy.random.randint(args.min, args.max, args.size[::-1])
         elif args.voxel_values == "random":
-            mapfile.data = np.random.rand(*args.size[::-1])
+            mapfile.data = numpy.random.rand(*args.size[::-1])
         mapfile.add_label(args.label)
         if not args.quiet:
             print(mapfile)
@@ -89,7 +89,7 @@ def sample(args):
     with models.MapFile(
         args.file, file_mode=args.file_mode, colour=args.colour, verbose=args.verbose
     ) as mapin:
-        from maptools.engines import grid_resample
+        from maptools.engines.ops import grid_resample
 
         data = grid_resample(mapin.data, args.factor)
         if args.output is not None:

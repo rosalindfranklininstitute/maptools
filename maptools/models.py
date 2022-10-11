@@ -4,7 +4,7 @@ import typing
 import unicodedata
 import warnings
 
-import numpy as np
+import numpy
 from styled import Styled
 
 from maptools import cli
@@ -44,7 +44,7 @@ class Orientation:
         self.cols = _cols
         self.rows = _rows
         self.sections = _sections
-        self._data = np.array(
+        self._data = numpy.array(
             [_raxes[_cols], _raxes[_rows], _raxes[_sections]], dtype=int
         ).reshape(1, 3)
 
@@ -88,7 +88,7 @@ class Orientation:
     def to_transpose_integers(self):
         """"""
         integers = self.to_integers()
-        rev_integers = np.asarray(integers)[::-1]
+        rev_integers = numpy.asarray(integers)[::-1]
         three_complement_rev_integers = 3 - rev_integers
         return tuple(three_complement_rev_integers.flatten().tolist())
 
@@ -118,8 +118,8 @@ class PermutationMatrix:
     def __init__(self, data):
         # sanity check
         try:
-            assert np.sum(data) == 3
-            assert np.count_nonzero(data) == 3
+            assert numpy.sum(data) == 3
+            assert numpy.count_nonzero(data) == 3
         except AssertionError:
             raise ValueError(f"non-binary values: {data}")
         self._data = data
@@ -131,10 +131,10 @@ class PermutationMatrix:
     def from_orientations(
         cls,
         orientation: typing.Union[
-            tuple, list, set, np.ndarray, typing.TypeVar("Orientation")
+            tuple, list, set, numpy.ndarray, typing.TypeVar("Orientation")
         ],
         new_orientation: typing.Union[
-            tuple, list, set, np.ndarray, typing.TypeVar("Orientation")
+            tuple, list, set, numpy.ndarray, typing.TypeVar("Orientation")
         ],
     ):
         """Compute the permutation matrix required to convert the sequence <orientation> to <new_orientation>
@@ -153,7 +153,7 @@ class PermutationMatrix:
                 )
             return tuple(array.flatten().tolist())
 
-        if isinstance(orientation, np.ndarray):
+        if isinstance(orientation, numpy.ndarray):
             _orientation = _convert_numpy_array_to_tuple(orientation)
         elif isinstance(orientation, (tuple, list, set)):
             _orientation = tuple(orientation)
@@ -161,10 +161,10 @@ class PermutationMatrix:
             _orientation = orientation.to_integers()
         else:
             raise TypeError(
-                f"orientation must be a sequence type (tuple, list, set, or np.ndarray)"
+                "orientation must be a sequence type (tuple, list, set, or numpy.ndarray)"
             )
 
-        if isinstance(new_orientation, np.ndarray):
+        if isinstance(new_orientation, numpy.ndarray):
             _new_orientation = _convert_numpy_array_to_tuple(new_orientation)
         elif isinstance(new_orientation, (tuple, list, set)):
             _new_orientation = tuple(new_orientation)
@@ -172,7 +172,7 @@ class PermutationMatrix:
             _new_orientation = new_orientation.to_integers()
         else:
             raise TypeError(
-                f"new_orientation must be a sequence type (tuple, list, set, or np.ndarray)"
+                "new_orientation must be a sequence type (tuple, list, set, or numpy.ndarray)"
             )
         # assert that the values in orientation are unique
         try:
@@ -190,7 +190,9 @@ class PermutationMatrix:
         except AssertionError:
             raise ValueError(f"values differ: {_orientation} vs. {_new_orientation}")
         # compute the permutation matrix
-        permutation_matrix = np.zeros((len(_orientation), len(_orientation)), dtype=int)
+        permutation_matrix = numpy.zeros(
+            (len(_orientation), len(_orientation)), dtype=int
+        )
         for index, value in enumerate(_orientation):
             permutation_matrix[index, _new_orientation.index(value)] = 1
         return cls(permutation_matrix)
@@ -204,34 +206,34 @@ class PermutationMatrix:
 
     @property
     def swap_sequences(self):
-        if np.array_equal(
+        if numpy.array_equal(
             self._data,
-            np.fromstring("1 0 0 0 1 0 0 0 1", sep=" ", dtype=int).reshape(3, 3),
+            numpy.fromstring("1 0 0 0 1 0 0 0 1", sep=" ", dtype=int).reshape(3, 3),
         ):
             return []
-        elif np.array_equal(
+        elif numpy.array_equal(
             self._data,
-            np.fromstring("1 0 0 0 0 1 0 1 0", sep=" ", dtype=int).reshape(3, 3),
+            numpy.fromstring("1 0 0 0 0 1 0 1 0", sep=" ", dtype=int).reshape(3, 3),
         ):
             return [(0, 1)]
-        elif np.array_equal(
+        elif numpy.array_equal(
             self._data,
-            np.fromstring("0 1 0 1 0 0 0 0 1", sep=" ", dtype=int).reshape(3, 3),
+            numpy.fromstring("0 1 0 1 0 0 0 0 1", sep=" ", dtype=int).reshape(3, 3),
         ):
             return [(1, 2)]
-        elif np.array_equal(
+        elif numpy.array_equal(
             self._data,
-            np.fromstring("0 0 1 0 1 0 1 0 0", sep=" ", dtype=int).reshape(3, 3),
+            numpy.fromstring("0 0 1 0 1 0 1 0 0", sep=" ", dtype=int).reshape(3, 3),
         ):
             return [(0, 2)]
-        elif np.array_equal(
+        elif numpy.array_equal(
             self._data,
-            np.fromstring("0 0 1 1 0 0 0 1 0", sep=" ", dtype=int).reshape(3, 3),
+            numpy.fromstring("0 0 1 1 0 0 0 1 0", sep=" ", dtype=int).reshape(3, 3),
         ):
             return [(1, 2), (0, 2)]
-        elif np.array_equal(
+        elif numpy.array_equal(
             self._data,
-            np.fromstring("0 1 0 0 0 1 1 0 0", sep=" ", dtype=int).reshape(3, 3),
+            numpy.fromstring("0 1 0 0 0 1 1 0 0", sep=" ", dtype=int).reshape(3, 3),
         ):
             return [(0, 2), (0, 1)]
 
@@ -248,7 +250,7 @@ class PermutationMatrix:
             raise ValueError(
                 f"invalid shapes for LHS multiplication: ({self.shape} @ {other.shape})"
             )
-        return np.dot(np.asarray(self), np.array(other))
+        return numpy.dot(numpy.asarray(self), numpy.array(other))
 
     def __imatmul__(self, other):
         """iterative RHS matrix multiplication"""
@@ -258,7 +260,7 @@ class PermutationMatrix:
             raise ValueError(
                 f"invalid shapes for LHS multiplication: ({self.shape} @ {other.shape})"
             )
-        return np.dot(np.asarray(self), np.asarray(other))
+        return numpy.dot(numpy.asarray(self), numpy.asarray(other))
 
     def __rmatmul__(self, other):
         """RHS matrix multiplication"""
@@ -269,7 +271,7 @@ class PermutationMatrix:
             raise ValueError(
                 f"invalid shapes for RHS multiplication: ({self.shape} @ {other.shape})"
             )
-        return np.dot(np.asarray(other), np.asarray(self))
+        return numpy.dot(numpy.asarray(other), numpy.asarray(self))
 
     def __repr__(self):
         return f"PermutationMatrix({self._data})"
@@ -281,7 +283,7 @@ class PermutationMatrix:
         return string
 
     def __eq__(self, other):
-        return np.array_equal(np.asarray(self), np.asarray(other))
+        return numpy.array_equal(numpy.asarray(self), numpy.asarray(other))
 
 
 class MapFileAttribute:
@@ -406,7 +408,7 @@ class MapFile:
         self._orientation = orientation
         if file_mode == "w":
             self._voxel_size = tuple(
-                np.array(voxel_size)
+                numpy.array(voxel_size)
                 @ PermutationMatrix.from_orientations(
                     (1, 2, 3),  # always start from the default
                     orientation.to_integers(),
@@ -510,15 +512,15 @@ class MapFile:
             # read the data
             dtype = self._mode_to_dtype()
             # when changing byteorder using numpy use the following formula:
-            #   dtype=np.dtype(dtype).newbyteorder(<byteorder>)
-            self._data = np.frombuffer(self.handle.read(), dtype=dtype).reshape(
+            #   dtype=numpy.dtype(dtype).newbyteorder(<byteorder>)
+            self._data = numpy.frombuffer(self.handle.read(), dtype=dtype).reshape(
                 self.ns, self.nr, self.nc
             )
             # voxel size
             self._voxel_size = tuple(
-                np.divide(
-                    np.array([self._x_length, self._y_length, self._z_length]),
-                    np.array([self._nc, self._nr, self._ns]),
+                numpy.divide(
+                    numpy.array([self._x_length, self._y_length, self._z_length]),
+                    numpy.array([self._nc, self._nr, self._ns]),
                 ).tolist()
             )
 
@@ -553,7 +555,7 @@ class MapFile:
         if self._data is None:
             dtype = self._mode_to_dtype()
             # byteorder
-            self._data = np.frombuffer(self.handle.read(), dtype=dtype).reshape(
+            self._data = numpy.frombuffer(self.handle.read(), dtype=dtype).reshape(
                 self.ns, self.nr, self.nc
             )
         return self._data
@@ -573,12 +575,12 @@ class MapFile:
             )
         if self._mode in cli.INT_MAP_MODES and value in cli.FLOAT_MAP_MODES:
             warnings.warn(
-                f"file size will increase by converting from int to float voxels",
+                "file size will increase by converting from int to float voxels",
                 UserWarning,
             )
         elif self._mode in cli.FLOAT_MAP_MODES and value in cli.INT_MAP_MODES:
             warnings.warn(
-                f"truncating data by converting from float to int voxels", UserWarning
+                "truncating data by converting from float to int voxels", UserWarning
             )
         if self.verbose:
             print(
@@ -604,10 +606,10 @@ class MapFile:
         if isinstance(value, (tuple, list, set)):
             _value = value
         # array
-        elif isinstance(value, np.ndarray):
+        elif isinstance(value, numpy.ndarray):
             _value = value.asdtype(int)
         else:
-            raise TypeError(f"value must be a tuple, list, set or numpy array")
+            raise TypeError("value must be a tuple, list, set or numpy array")
         self._start = _value
         self._prepare()
 
@@ -627,7 +629,7 @@ class MapFile:
         return self._voxel_size
 
     @voxel_size.setter
-    def voxel_size(self, vox_size: typing.Union[tuple, list, set, np.ndarray]):
+    def voxel_size(self, vox_size: typing.Union[tuple, list, set, numpy.ndarray]):
         if isinstance(
             vox_size,
             (
@@ -642,11 +644,11 @@ class MapFile:
             except AssertionError:
                 raise TypeError(f"voxel size should be a number or 3-tuple: {vox_size}")
             x_size, y_size, z_size = vox_size
-        elif isinstance(vox_size, np.ndarray):
+        elif isinstance(vox_size, numpy.ndarray):
             try:
                 assert vox_size.shape == (3,) or vox_size.shape == (1, 3)
             except AssertionError:
-                raise TypeError(f"voxel size should be an array of shape (3, )")
+                raise TypeError("voxel size should be an array of shape (3, )")
             x_size, y_size, z_size = vox_size.flatten()
         self._voxel_size = x_size, y_size, z_size
         self._prepare()
@@ -671,12 +673,14 @@ class MapFile:
         permutation_matrix = self.orientation / orientation
         swap_sequences = permutation_matrix.swap_sequences
         for swap_sequence in swap_sequences:
-            self._data = np.swapaxes(self._data, *swap_sequence)
-        # self._data = np.transpose(self._data, orientation.to_transpose_integers())
+            self._data = numpy.swapaxes(self._data, *swap_sequence)
+        # self._data = numpy.transpose(self._data, orientation.to_transpose_integers())
         # set the new orientation
         self._orientation = orientation
         # also permute the voxel sizes
-        self.voxel_size = np.array(self.voxel_size).reshape(1, 3) @ permutation_matrix
+        self.voxel_size = (
+            numpy.array(self.voxel_size).reshape(1, 3) @ permutation_matrix
+        )
         # recalculate parameters
         self._prepare()
 
@@ -690,8 +694,8 @@ class MapFile:
         # some attributes have default values and are excluded
         self._ns, self._nr, self._nc = self._data.shape
         self._nz, self._ny, self._nx = self._data.shape
-        self._z_length, self._y_length, self._x_length = np.multiply(
-            self._data.shape, np.array(self._voxel_size)[::-1]
+        self._z_length, self._y_length, self._x_length = numpy.multiply(
+            self._data.shape, numpy.array(self._voxel_size)[::-1]
         )
         self._mapc, self._mapr, self._maps = self.orientation.to_integers()
         # change dtype if necessary
@@ -702,11 +706,11 @@ class MapFile:
             self._data.max(),
             self._data.mean(),
         )
-        self._rms = math.sqrt(np.mean(np.square(self._data)))
+        self._rms = math.sqrt(numpy.mean(numpy.square(self._data)))
 
     def _dtype_to_mode(self):
         """"""
-        dtype = np.asarray(self).dtype
+        dtype = numpy.asarray(self).dtype
         if dtype.name == "int8":
             return 0
         elif dtype.name == "int16":
@@ -726,23 +730,23 @@ class MapFile:
 
     def _mode_to_dtype(self):
         """"""
-        # dtype = np.float32  # default
+        # dtype = numpy.float32  # default
         if self.mode == 0:
-            dtype = np.int8
+            dtype = numpy.int8
         elif self.mode == 1:
-            dtype = np.int16
+            dtype = numpy.int16
         elif self.mode == 2:
-            dtype = np.float32
+            dtype = numpy.float32
         elif self.mode == 3:
-            dtype = np.int32
+            dtype = numpy.int32
         elif self.mode == 4:
-            dtype = np.complex64
+            dtype = numpy.complex64
         elif self.mode == 6:
-            dtype = np.uint16
+            dtype = numpy.uint16
         elif self.mode == 12:
-            dtype = np.float16
+            dtype = numpy.float16
         # elif self._mode == 101:
-        #     dtype = np.dtype()
+        #     dtype = numpy.dtype()
         return dtype
 
     def _write_header(self):
@@ -780,10 +784,10 @@ class MapFile:
         # write the remaining blanks
         if self.labels:
             for label in self.labels:
-                self.handle.write(struct.pack(f"<80s", label.encode("utf-8")))
+                self.handle.write(struct.pack("<80s", label.encode("utf-8")))
             self.handle.write(struct.pack(f"<{80 * (10 - len(self.labels))}x"))
         else:
-            self.handle.write(struct.pack(f"<800x"))
+            self.handle.write(struct.pack("<800x"))
 
     def _read_labels(self):
         """"""
@@ -851,7 +855,7 @@ class MapFile:
             warnings.warn(f"labels full; {label} will not be inserted", UserWarning)
             return
         try:
-            # non-negative indices: 0 to 9
+            # non-negative indices: 0 to 9g
             # negative indices: -10 to -1
             # if length is k: 0 to k-1
             # if length is k: -k to -1
@@ -862,7 +866,7 @@ class MapFile:
             )
         except AssertionError:
             warnings.warn(
-                f"invalid label position {label_id}; should be in range [{-len(self._labels)}, "
+                f"invalid label position {position}; should be in range [{-len(self._labels)}, "
                 f"{max(0, len(self._labels) - 1)}]",
                 UserWarning,
             )
@@ -987,5 +991,5 @@ class MapFile:
             and self.ispg == other.ispg
             and self.nsymbt == other.nsymbt
             and self.lskflg == other.lskflg
-            and np.array_equal(self._data, other._data)
+            and numpy.array_equal(self._data, other._data)
         )
