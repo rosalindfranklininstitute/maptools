@@ -8,9 +8,9 @@
 #
 import logging
 import numpy as np
+import maptools
 from functools import singledispatch
 from maptools.util import read, write, read_axis_order
-from maptools.reorder import reorder
 
 
 __all__ = ["cc"]
@@ -20,9 +20,20 @@ __all__ = ["cc"]
 logger = logging.getLogger(__name__)
 
 
+def cc(*args, **kwargs):
+    if len(args) == 0:
+        return _cc_str(**kwargs)
+    return _cc(*args, **kwargs)
+
+
 @singledispatch
-def cc(
-    input_map_filename1,
+def _cc(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_cc.register
+def _cc_str(
+    input_map_filename1: str,
     input_map_filename2: str = None,
     output_map_filename: str = None,
 ):
@@ -44,7 +55,9 @@ def cc(
     if input_map_filename2 is not None:
         infile2 = read(input_map_filename2)
         data2 = infile2.data
-        data2 = reorder(data2, read_axis_order(infile2), read_axis_order(infile1))
+        data2 = maptools.reorder(
+            data2, read_axis_order(infile2), read_axis_order(infile1)
+        )
     else:
         data2 = None
 
@@ -55,7 +68,7 @@ def cc(
     write(output_map_filename, cc.astype("float32"), infile=infile1)
 
 
-@cc.register
+@_cc.register
 def _cc_ndarray(data1: np.ndarray, data2: np.ndarray = None) -> np.ndarray:
     """
     Compute the CC between two maps

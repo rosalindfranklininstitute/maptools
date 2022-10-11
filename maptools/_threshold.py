@@ -19,8 +19,19 @@ __all__ = ["threshold"]
 logger = logging.getLogger(__name__)
 
 
+def threshold(*args, **kwargs):
+    if len(args) == 0:
+        return _threshold_str(**kwargs)
+    return _threshold(*args, **kwargs)
+
+
 @singledispatch
-def threshold(
+def _threshold(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_threshold.register
+def _threshold_str(
     input_map_filename,
     output_map_filename: str,
     output_mask_filename: str = None,
@@ -47,7 +58,7 @@ def threshold(
     data = infile.data.copy()
 
     # Apply the threshold
-    data, mask = array_threshold(
+    data, mask = _threshold_ndarray(
         data, threshold=threshold, normalize=normalize, zero=zero
     )
 
@@ -59,7 +70,7 @@ def threshold(
         write(output_mask_filename, mask.astype("uint8"), infile=infile)
 
 
-@threshold.register
+@_threshold.register
 def _threshold_ndarray(
     data: np.ndarray, threshold: float = 0, normalize: bool = False, zero: bool = True
 ) -> np.ndarray:

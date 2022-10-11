@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 
 
 def genmask(
-    input_pdb_filename=None,
-    output_mask_filename=None,
-    atom_radius=5,
-    border=0,
-    shape=None,
-    voxel_size=1,
-    sigma=0,
+    input_pdb_filename: str = None,
+    output_mask_filename: str = None,
+    atom_radius: float = 5,
+    border: int = 0,
+    shape: tuple = None,
+    voxel_size: float = 1,
+    sigma: float = 0,
 ):
     """
     Generate the mask

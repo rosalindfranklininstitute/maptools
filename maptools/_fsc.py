@@ -10,10 +10,10 @@ import logging
 import numpy as np
 import scipy.ndimage
 import yaml
+import maptools
 from functools import singledispatch
 from matplotlib import pylab, ticker
 from maptools.util import read, read_axis_order
-from maptools.reorder import reorder
 from math import sqrt
 
 
@@ -49,9 +49,20 @@ def resolution_from_fsc(bins, fsc, value=0.5):
     return bin_index, bin_value, fsc_value
 
 
+def fsc(*args, **kwargs):
+    if len(args) == 0:
+        return _fsc_str(**kwargs)
+    return _fsc(*args, **kwargs)
+
+
 @singledispatch
-def fsc(
-    input_map_filename1,
+def _fsc(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_fsc.register
+def _fsc_str(
+    input_map_filename1: str,
     input_map_filename2: str,
     output_plot_filename: str = None,
     output_data_filename: str = None,
@@ -89,15 +100,15 @@ def fsc(
     data2 = infile2.data
 
     # Reorder data2 to match data1
-    data1 = reorder(data1, read_axis_order(infile1), (0, 1, 2))
-    data2 = reorder(data2, read_axis_order(infile2), (0, 1, 2))
+    data1 = maptools.reorder(data1, read_axis_order(infile1), (0, 1, 2))
+    data2 = maptools.reorder(data2, read_axis_order(infile2), (0, 1, 2))
 
     # Loop through all axes
     results = []
     for current_axis in axis:
 
         # Compute the FSC
-        bins, num, fsc = array_fsc(
+        bins, num, fsc = _fsc_ndarray(
             data1,
             data2,
             voxel_size=tuple(infile1.voxel_size[a] for a in ["z", "y", "x"]),
@@ -163,7 +174,7 @@ def fsc(
     return results
 
 
-@fsc.register
+@_fsc.register
 def _fsc_ndarray(
     data1: np.ndarray,
     data2: np.ndarray,

@@ -8,7 +8,7 @@ def test_reorder(ideal_map_filename):
     _, output_map_filename = tempfile.mkstemp()
 
     maptools.reorder(
-        input_map_filename=ideal_map_filename,
+        ideal_map_filename,
         output_map_filename=output_map_filename,
         axis_order=(0, 1, 2),
     )

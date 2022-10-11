@@ -22,9 +22,20 @@ __all__ = ["segment"]
 logger = logging.getLogger(__name__)
 
 
+def segment(*args, **kwargs):
+    if len(args) == 0:
+        return _segment_str(**kwargs)
+    return _segment(*args, **kwargs)
+
+
 @singledispatch
-def segment(
-    input_map_filename,
+def _segment(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_segment.register
+def _segment_str(
+    input_map_filename: str,
     output_map_filename: str = None,
     output_mask_filename: str = None,
     num_objects: int = 1,
@@ -56,7 +67,7 @@ def segment(
         write(output_map_filename, maptools.mask(data, mask), infile=infile)
 
 
-@segment.register
+@_segment.register
 def _segment_ndarray(data: np.ndarray, num_objects: int = 1):
     """
     Segment the map
@@ -75,9 +86,7 @@ def _segment_ndarray(data: np.ndarray, num_objects: int = 1):
     logger.info("Using threshold = %f" % threshold)
 
     # Label the pixels
-    labels, num_labels = scipy.ndimage.measurements.label(
-        (data >= threshold).astype("int8")
-    )
+    labels, num_labels = scipy.ndimage.label((data >= threshold).astype("int8"))
     logger.info("Found %d objects" % num_labels)
 
     # Compute the largest objects

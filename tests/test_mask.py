@@ -12,7 +12,7 @@ def test_mask(ideal_map_filename, mask_filename):
             _, output_map_filename = tempfile.mkstemp()
 
             maptools.mask(
-                input_map_filename=ideal_map_filename,
+                ideal_map_filename,
                 output_map_filename=output_map_filename,
                 input_mask_filename=mask_filename,
                 fourier_space=fourier_space,

@@ -20,9 +20,23 @@ __all__ = ["erode"]
 logger = logging.getLogger(__name__)
 
 
+def erode(*args, **kwargs):
+    if len(args) == 0:
+        return _erode_str(**kwargs)
+    return _erode(*args, **kwargs)
+
+
 @singledispatch
-def erode(
-    input_map_filename, output_map_filename: str, kernel: int = 3, num_iter: int = 1
+def _erode(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_erode.register
+def _erode_str(
+    input_map_filename: str,
+    output_map_filename: str,
+    kernel: int = 3,
+    num_iter: int = 1,
 ):
     """
     Dilate the map
@@ -46,7 +60,7 @@ def erode(
     write(output_map_filename, data.astype("uint8"), infile=infile)
 
 
-@erode.register
+@_erode.register
 def _erode_ndarray(data: np.ndarray, kernel: int = 3, num_iter: int = 1) -> np.ndarray:
     """
     Dilate the map

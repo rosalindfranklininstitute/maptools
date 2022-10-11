@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def crop(
-    input_map_filename,
+    input_map_filename: str,
     output_map_filename: str,
     roi: tuple = None,
     origin: tuple = None,

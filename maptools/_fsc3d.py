@@ -9,9 +9,9 @@
 import logging
 import numpy as np
 import scipy.ndimage
+import maptools
 from functools import singledispatch
 from maptools.util import read, write, read_axis_order
-from maptools.reorder import reorder
 
 
 __all__ = ["fsc3d"]
@@ -21,9 +21,20 @@ __all__ = ["fsc3d"]
 logger = logging.getLogger(__name__)
 
 
+def fsc3d(*args, **kwargs):
+    if len(args) == 0:
+        return _fsc3d_str(**kwargs)
+    return _fsc3d(*args, **kwargs)
+
+
 @singledispatch
-def fsc3d(
-    input_map_filename1,
+def _fsc3d(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_fsc3d.register
+def _fsc3d_str(
+    input_map_filename1: str,
     input_map_filename2: str,
     output_map_filename: str = None,
     kernel: int = 9,
@@ -50,8 +61,8 @@ def fsc3d(
     data2 = infile2.data
 
     # Reorder input arrays
-    data1 = reorder(data1, read_axis_order(infile1), (0, 1, 2))
-    data2 = reorder(data2, read_axis_order(infile2), (0, 1, 2))
+    data1 = maptools.reorder(data1, read_axis_order(infile1), (0, 1, 2))
+    data2 = maptools.reorder(data2, read_axis_order(infile2), (0, 1, 2))
 
     # Compute the local FSC
     fsc = _fsc3d_ndarray(
@@ -63,13 +74,13 @@ def fsc3d(
     )
 
     # Reorder output array
-    fsc = reorder(fsc, (0, 1, 2), read_axis_order(infile1))
+    fsc = maptools.reorder(fsc, (0, 1, 2), read_axis_order(infile1))
 
     # Write the output file
     write(output_map_filename, fsc.astype("float32"), infile=infile1)
 
 
-@fsc3d.register
+@_fsc3d.register
 def _fsc3d_ndarray(
     data1: np.ndarray,
     data2: np.ndarray,

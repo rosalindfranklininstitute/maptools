@@ -19,8 +19,21 @@ __all__ = ["reorder"]
 logger = logging.getLogger(__name__)
 
 
+def reorder(*args, **kwargs):
+    if len(args) == 0:
+        return _reorder_str(**kwargs)
+    return _reorder(*args, **kwargs)
+
+
 @singledispatch
-def reorder(input_map_filename, output_map_filename: str, axis_order: tuple = None):
+def _reorder(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_reorder.register
+def _reorder_str(
+    input_map_filename, output_map_filename: str, axis_order: tuple = None
+):
     """
     Reorder the data axes
 
@@ -47,7 +60,7 @@ def reorder(input_map_filename, output_map_filename: str, axis_order: tuple = No
     outfile.update_header_stats()
 
 
-@reorder.register
+@_reorder.register
 def _reorder_ndarray(
     data: np.ndarray, original_order: tuple, new_order: tuple
 ) -> np.ndarray:

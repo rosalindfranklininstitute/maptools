@@ -8,9 +8,9 @@
 #
 import logging
 import numpy as np
+import maptools
 from functools import singledispatch
 from maptools.util import read, write, read_axis_order
-from maptools.reorder import reorder
 
 
 __all__ = ["__mask__"]
@@ -20,8 +20,19 @@ __all__ = ["__mask__"]
 logger = logging.getLogger(__name__)
 
 
+def mask(*args, **kwargs):
+    if len(args) == 0:
+        return _mask_str(**kwargs)
+    return _mask(*args, **kwargs)
+
+
 @singledispatch
-def mask(
+def _mask(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_mask.register
+def _mask_str(
     input_map_filename,
     output_map_filename: str,
     input_mask_filename: str = None,
@@ -51,7 +62,7 @@ def mask(
     mask = maskfile.data
 
     # Reorder the maskfile axes to match the data
-    mask = reorder(mask, read_axis_order(maskfile), read_axis_order(infile))
+    mask = maptools.reorder(mask, read_axis_order(maskfile), read_axis_order(infile))
 
     # Apply the mask
     data = _mask_ndarray(data, mask, fourier_space=fourier_space, shift=shift)
@@ -60,7 +71,7 @@ def mask(
     write(output_map_filename, data.astype("float32"), infile=infile)
 
 
-@mask.register
+@_mask.register
 def _mask_ndarray(
     data: np.ndarray,
     mask: np.ndarray,

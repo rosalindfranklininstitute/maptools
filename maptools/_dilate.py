@@ -20,9 +20,23 @@ __all__ = ["dilate"]
 logger = logging.getLogger(__name__)
 
 
+def dilate(*args, **kwargs):
+    if len(args) == 0:
+        return _dilate_str(**kwargs)
+    return _dilate(*args, **kwargs)
+
+
 @singledispatch
-def dilate(
-    input_map_filename, output_map_filename: str, kernel: int = 3, num_iter: int = 1
+def _dilate(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_dilate.register
+def _dilate_str(
+    input_map_filename: str,
+    output_map_filename: str,
+    kernel: int = 3,
+    num_iter: int = 1,
 ):
     """
     Dilate the map
@@ -46,7 +60,7 @@ def dilate(
     write(output_map_filename, data.astype("uint8"), infile=infile)
 
 
-@dilate.register
+@_dilate.register
 def _dilate_ndarray(data: np.ndarray, kernel: int = 3, num_iter: int = 1) -> np.ndarray:
     """
     Dilate the map

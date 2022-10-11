@@ -13,16 +13,27 @@ from functools import singledispatch
 from maptools.util import read, write
 
 
-__all__ == ["filter"]
+__all__ = ["filter"]
 
 
 # Get the logger
 logger = logging.getLogger(__name__)
 
 
+def filter(*args, **kwargs):
+    if len(args) == 0:
+        return _filter_str(**kwargs)
+    return _filter(*args, **kwargs)
+
+
 @singledispatch
-def filter(
-    input_map_filename,
+def _filter(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_filter.register
+def _filter_str(
+    input_map_filename: str,
     output_map_filename: str,
     filter_type: str = "lowpass",
     filter_shape: str = "gaussian",
@@ -67,7 +78,7 @@ def filter(
     write(output_map_filename, data, infile=infile)
 
 
-@ndarray.register
+@_filter.register
 def _filter_ndarray(
     data: np.ndarray,
     filter_type: str = "lowpass",

@@ -13,7 +13,7 @@ def test_threshold(ideal_map_filename):
             _, output_mask_filename = tempfile.mkstemp()
 
             maptools.segment(
-                input_map_filename=ideal_map_filename,
+                ideal_map_filename,
                 output_map_filename=output_map_filename,
                 output_mask_filename=output_mask_filename,
             )

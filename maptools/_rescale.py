@@ -20,9 +20,20 @@ __all__ = ["rescale"]
 logger = logging.getLogger(__name__)
 
 
+def rescale(*args, **kwargs):
+    if len(args) == 0:
+        return _rescale_str(**kwargs)
+    return _rescale(*args, **kwargs)
+
+
 @singledispatch
-def rescale(
-    input_map_filename,
+def _rescale(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_rescale.register
+def _rescale_str(
+    input_map_filename: str,
     output_map_filename: str,
     mean: str = None,
     sdev: str = None,
@@ -61,7 +72,7 @@ def rescale(
     write(output_map_filename, data, infile=infile)
 
 
-@rescale.register
+@_rescale.register
 def _rescale_ndarray(
     data: np.ndarray,
     mean: float = None,

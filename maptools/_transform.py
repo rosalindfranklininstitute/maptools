@@ -22,9 +22,20 @@ __all__ = ["transform"]
 logger = logging.getLogger(__name__)
 
 
+def transform(*args, **kwargs):
+    if len(args) == 0:
+        return _transform_str(**kwargs)
+    return _transform(*args, **kwargs)
+
+
 @singledispatch
-def transform(
-    input_map_filename,
+def _transform(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_transform.register
+def _transform_str(
+    input_map_filename: str,
     output_map_filename: str,
     offset: tuple = None,
     rotation: tuple = (0, 0, 0),
@@ -67,7 +78,7 @@ def transform(
     write(output_map_filename, data, infile=infile)
 
 
-@transform.register
+@_transform.register
 def _transform_ndarray(
     data: np.ndarray,
     axis_order: tuple = (0, 1, 2),

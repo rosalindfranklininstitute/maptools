@@ -20,8 +20,19 @@ __all__ = ["rebin"]
 logger = logging.getLogger(__name__)
 
 
+def rebin(*args, **kwargs):
+    if len(args) == 0:
+        return _rebin_str(**kwargs)
+    return _rebin(*args, **kwargs)
+
+
 @singledispatch
-def rebin(input_map_filename, output_map_filename: str, shape: tuple = None):
+def _rebin(_):
+    raise RuntimeError("Unexpected input")
+
+
+@_rebin.register
+def _rebin_str(input_map_filename: str, output_map_filename: str, shape: tuple = None):
     """
     Rebin the map
 
@@ -40,7 +51,7 @@ def rebin(input_map_filename, output_map_filename: str, shape: tuple = None):
 
     # Get the subset of data
     logger.info("Resampling map from shape %s to %s" % (data.shape, tuple(shape)))
-    data = array_rebin(data, shape)
+    data = _rebin_ndarray(data, shape)
 
     # Write the output file
     outfile = write(output_map_filename, data, infile=infile)
@@ -53,7 +64,7 @@ def rebin(input_map_filename, output_map_filename: str, shape: tuple = None):
     )
 
 
-# @rebin.register
+# @_rebin.register
 # def _rebin_ndarray(data, shape):
 #    """
 #    Rebin a multidimensional array
@@ -80,7 +91,7 @@ def rebin(input_map_filename, output_map_filename: str, shape: tuple = None):
 #    return data
 
 
-@rebin.register
+@_rebin.register
 def _rebin_ndarray(data: np.ndarray, shape: tuple):
     """
     Rebin a multidimensional array
