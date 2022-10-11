@@ -13,7 +13,7 @@ from functools import singledispatch
 from maptools.util import read, write, read_axis_order
 
 
-__all__ = ["__mask__"]
+__all__ = ["mask"]
 
 
 # Get the logger
