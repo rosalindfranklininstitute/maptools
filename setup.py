@@ -20,6 +20,7 @@ def main():
     setup(
         packages=["maptools"],
         install_requires=[
+            "styled",
             "gemmi",
             "matplotlib",
             "mrcfile",

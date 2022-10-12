@@ -1,5 +1,4 @@
 import pathlib
-import pathlib
 import unittest
 
 from maptools import cli  # , managers, utils, engines
@@ -11,14 +10,14 @@ TEST_DATA_DIR = BASE_DIR / "test_data"
 class TestCLI(unittest.TestCase):
     def test_view(self):
         """"""
-        args = cli.cli(f"map view file.map")
+        args = cli.cli("map view file.map")
         self.assertEqual("view", args.command)
         self.assertEqual("file.map", args.file)
         self.assertFalse(args.verbose)
         self.assertFalse(args.colour)
 
     def test_edit(self):
-        args = cli.cli(f"map edit file.map")
+        args = cli.cli("map edit file.map")
         self.assertEqual("edit", args.command)
         self.assertEqual("file.map", args.file)
         self.assertIsNone(args.orientation)
@@ -30,7 +29,7 @@ class TestCLI(unittest.TestCase):
         self.assertFalse(args.colour)
 
     def test_create_with_no_arguments(self):
-        args = cli.cli(f"map create file.map")
+        args = cli.cli("map create file.map")
         # self.assertEqual('create', args.command)
         self.assertIsNone(args.command)
         self.assertEqual("file.map", args.file)
@@ -47,7 +46,7 @@ class TestCLI(unittest.TestCase):
         self.assertFalse(args.colour)
 
     def test_create_with_arguments(self):
-        args = cli.cli(f"map create file.map -O yzx -M 0 -V 3.0 2.0 1.0")
+        args = cli.cli("map create file.map -O yzx -M 0 -V 3.0 2.0 1.0")
         self.assertEqual("create", args.command)
         self.assertEqual("file.map", args.file)
         self.assertEqual("YZX", args.orientation)
@@ -66,13 +65,13 @@ class TestCLI(unittest.TestCase):
 
     def test_sample(self):
         """"""
-        args = cli.cli(f"map sample --factor 2 file.map")
+        args = cli.cli("map sample --factor 2 file.map")
         self.assertEqual("sample", args.command)
         self.assertEqual(2, args.factor)
         self.assertEqual("file.map", args.file)
 
     def test_ops(self):
         """The ops command"""
-        args = cli.cli(f"map ops")
+        args = cli.cli("map ops")
         print(args)
         self.assertEqual("ops", args.command)
