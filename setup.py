@@ -27,6 +27,7 @@ def main():
             "pyyaml",
             "scipy",
             "scikit-image",
+            "styled",
         ],
         setup_requires=["setuptools_scm", "pytest-runner"],
         tests_require=tests_require,

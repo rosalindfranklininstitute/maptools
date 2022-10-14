@@ -17,6 +17,7 @@ from maptools.engines._fit import fit
 from maptools.engines._fsc import fsc
 from maptools.engines._fsc3d import fsc3d
 from maptools.engines._genmask import genmask
+from maptools.engines._grid_resample import grid_resample
 from maptools.engines._map2mtz import map2mtz
 from maptools.engines._mask import mask
 from maptools.engines._pdb2map import pdb2map
@@ -41,6 +42,7 @@ __all__ = [
     "fsc",
     "fsc3d",
     "genmask",
+    "grid_resample",
     "map2mtz",
     "mask",
     "pdb2map",

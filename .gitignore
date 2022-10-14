@@ -132,4 +132,4 @@ dmypy.json
 tags
 
 # setuptools_scm
-_version.py
+maptools/_version.py
