@@ -150,7 +150,7 @@ def _fsc_str(
             fsc = r["table"]["fsc"]
             axis = r["axis"]
             resolution = r["resolution"]["bin_value"]
-            if axis == None:
+            if axis is None:
                 axis == (0, 1, 2)
             ax.plot(r["table"]["bin"], r["table"]["fsc"], label="axis - %s" % str(axis))
             ax.set_xlabel("Resolution (A)")

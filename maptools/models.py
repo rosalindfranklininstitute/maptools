@@ -862,7 +862,7 @@ class MapFile:
             )
         except AssertionError:
             warnings.warn(
-                f"invalid label position {label_id}; should be in range [{-len(self._labels)}, "
+                f"invalid label position {position}; should be in range [{-len(self._labels)}, "
                 f"{max(0, len(self._labels) - 1)}]",
                 UserWarning,
             )
