@@ -1,5 +1,6 @@
 name: maptools
 channels:
+  - conda-forge
   - james.parkhurst
 dependencies:
   - python=3.9
