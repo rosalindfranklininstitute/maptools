@@ -6,33 +6,28 @@
 # This code is distributed under the GPLv3 license, a copy of
 # which is included in the root directory of this package.
 #
-from maptools._cc import cc
-from maptools._crop import crop
-from maptools._dilate import dilate
-from maptools._edit import edit
-from maptools._erode import erode
-from maptools._fft import fft
-from maptools._filter import filter
-from maptools._fit import fit
-from maptools._fsc import fsc
-from maptools._fsc3d import fsc3d
-from maptools._genmask import genmask
-from maptools._map2mtz import map2mtz
-from maptools._mask import mask
-from maptools._pdb2map import pdb2map
-from maptools._rebin import rebin
-from maptools._reorder import reorder
-from maptools._rescale import rescale
-from maptools._rotate import rotate
-from maptools._segment import segment
-from maptools._threshold import threshold
-from maptools._transform import transform
-
-
-try:
-    from maptools._version import version as __version__
-except ImportError:
-    __version__ = "unknown"
+from maptools.engines._cc import cc
+from maptools.engines._crop import crop
+from maptools.engines._dilate import dilate
+from maptools.engines._edit import edit
+from maptools.engines._erode import erode
+from maptools.engines._fft import fft
+from maptools.engines._filter import filter
+from maptools.engines._fit import fit
+from maptools.engines._fsc import fsc
+from maptools.engines._fsc3d import fsc3d
+from maptools.engines._genmask import genmask
+from maptools.engines._grid_resample import grid_resample
+from maptools.engines._map2mtz import map2mtz
+from maptools.engines._mask import mask
+from maptools.engines._pdb2map import pdb2map
+from maptools.engines._rebin import rebin
+from maptools.engines._reorder import reorder
+from maptools.engines._rescale import rescale
+from maptools.engines._rotate import rotate
+from maptools.engines._segment import segment
+from maptools.engines._threshold import threshold
+from maptools.engines._transform import transform
 
 
 __all__ = [
@@ -47,6 +42,7 @@ __all__ = [
     "fsc",
     "fsc3d",
     "genmask",
+    "grid_resample",
     "map2mtz",
     "mask",
     "pdb2map",

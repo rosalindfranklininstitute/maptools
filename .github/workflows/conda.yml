@@ -1,6 +1,12 @@
 name: Conda
 
-on: [push]
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  push:
+    branches: [ master ]
+  release:
+    types: [ created ]
 
 jobs:
   build-linux:
