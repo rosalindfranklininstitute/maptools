@@ -9,7 +9,7 @@
 import logging
 import numpy as np
 from maptools.util import read, write, read_axis_order
-from maptools.reorder import reorder
+from maptools._reorder import reorder
 
 
 # Get the logger
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def accumulate(
-    input_map_filename: str,
+    input_map_filename: list,
     output_map_filename: str,
 ):
     """
