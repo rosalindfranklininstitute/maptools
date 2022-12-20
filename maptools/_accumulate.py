@@ -7,6 +7,7 @@
 # which is included in the root directory of this package.
 #
 import logging
+import numpy as np
 from maptools.util import read, write, read_axis_order
 from maptools.reorder import reorder
 
@@ -41,4 +42,5 @@ def accumulate(
             )
 
     # Write the output file
-    outfile = write(output_map_filename, data, infile=reference_file)
+    if data is not None:
+        outfile = write(output_map_filename, np.array(data), infile=reference_file)
