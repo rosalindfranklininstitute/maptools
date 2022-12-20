@@ -6,7 +6,6 @@
 # This code is distributed under the GPLv3 license, a copy of
 # which is included in the root directory of this package.
 #
-from maptools._accumulate import accumulate
 from maptools._cc import cc
 from maptools._crop import crop
 from maptools._dilate import dilate
@@ -37,7 +36,6 @@ except ImportError:
 
 
 __all__ = [
-    "accumulate",
     "cc",
     "crop",
     "dilate",

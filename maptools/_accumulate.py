@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 def accumulate(
-    input_map_filename,
-    output_map_filename,
+    input_map_filename: str,
+    output_map_filename: str,
 ):
     """
     Accumulate the maps
