@@ -6,6 +6,7 @@
 # This code is distributed under the GPLv3 license, a copy of
 # which is included in the root directory of this package.
 #
+from maptools.accumulate import accumulate
 from maptools.cc import cc
 from maptools.crop import crop
 from maptools.dilate import dilate
@@ -29,6 +30,7 @@ from maptools.threshold import threshold
 from maptools.transform import transform
 
 __all__ = [
+    "accumulate",
     "cc",
     "crop",
     "dilate",

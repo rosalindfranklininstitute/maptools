@@ -11,6 +11,20 @@ import logging
 import maptools
 
 
+def accumulate(args):
+    """
+    Accumulate maps
+
+    Args:
+        args (object): The parsed arguments
+
+    """
+    maptools.accumulate(
+        input_map_filename=args.input,
+        output_map_filename=args.output,
+    )
+
+
 def cc(args):
     """
     Compute map cc in real space
@@ -368,6 +382,45 @@ def main(args=None):
         args (list): The command line arguments
 
     """
+
+    def add_accumulate_arguments(subparsers, parser_common):
+        """
+        Add command line arguments for the transform command
+
+        """
+
+        # Create the parser
+        parser_accumulate = subparsers.add_parser("accumulate", help="Accumulate maps")
+
+        # Add arguments
+        parser_accumulate.add_argument(
+            "-i",
+            "--input",
+            dest="input",
+            type=str,
+            nargs="+",
+            default=None,
+            help="The input files",
+        )
+
+        parser_accumulate.add_argument(
+            "-o",
+            "--output",
+            dest="output",
+            type=str,
+            default="accumulated.mrc",
+            help="The output map file",
+        )
+
+        # FIXME
+        parser_accumulate.add_argument(
+            "-v",
+            "--verbose",
+            dest="verbose",
+            action="store_true",
+            default=False,
+            help="Set verbose output",
+        )
 
     def add_cc_arguments(subparsers, parser_common):
         """
@@ -1287,6 +1340,7 @@ def main(args=None):
     subparsers = parser.add_subparsers(dest="command", help="The sub commands")
 
     # Add arguments for the sub commands
+    add_accumulate_arguments(subparsers, parser_common)
     add_cc_arguments(subparsers, parser_common)
     add_crop_arguments(subparsers, parser_common)
     add_dilate_arguments(subparsers, parser_common)
@@ -1324,6 +1378,7 @@ def main(args=None):
 
     # Call the appropriate function
     {
+        "accumulate": accumulate,
         "cc": cc,
         "crop": crop,
         "dilate": dilate,
