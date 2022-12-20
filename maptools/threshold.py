@@ -87,7 +87,7 @@ def threshold(*args, **kwargs):
     Threshold the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
+    if (len(args) > 0 and isinstance(args[0], str)) or "input_map_filename" in kwargs:
         func = mapfile_threshold
     else:
         func = array_threshold

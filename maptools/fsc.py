@@ -117,7 +117,7 @@ def array_fsc(
     if resolution is not None:
         if resolution < max_resolution:
             resolution = max_resolution
-        mask = R < 1.0 / resolution ** 2
+        mask = R < 1.0 / resolution**2
         X = X[mask]
         Y = Y[mask]
         R = R[mask]
@@ -131,13 +131,13 @@ def array_fsc(
 
     # Compute local variance and covariance by binning with resolution
     if method == "binned":
-        bin_index = numpy.floor(nbins * R * resolution ** 2).astype("int32")
+        bin_index = numpy.floor(nbins * R * resolution**2).astype("int32")
         N = numpy.bincount(bin_index)
         varX = numpy.bincount(bin_index, XX)
         varY = numpy.bincount(bin_index, YY)
         covXY = numpy.bincount(bin_index, XY)
     elif method == "averaged":
-        bin_index = numpy.floor((sum(shape) // 2) * R * resolution ** 2).astype("int32")
+        bin_index = numpy.floor((sum(shape) // 2) * R * resolution**2).astype("int32")
         N = numpy.bincount(bin_index)
         varX = numpy.bincount(bin_index, XX)
         varY = numpy.bincount(bin_index, YY)
@@ -154,7 +154,7 @@ def array_fsc(
     mask = (varX > tiny) & (varY > tiny)
     fsc = numpy.zeros(covXY.shape)
     fsc[mask] = covXY[mask] / (numpy.sqrt(varX[mask]) * numpy.sqrt(varY[mask]))
-    bins = (1 / resolution ** 2) * numpy.arange(1, covXY.size + 1) / (covXY.size)
+    bins = (1 / resolution**2) * numpy.arange(1, covXY.size + 1) / (covXY.size)
 
     # Print some output
     logger.info("Resolution, FSC")
@@ -283,7 +283,7 @@ def fsc(*args, **kwargs):
     Compute the FSC of the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename1" in kwargs:
+    if (len(args) > 0 and isinstance(args[0], str)) or "input_map_filename1" in kwargs:
         func = mapfile_fsc
     else:
         func = array_fsc

@@ -95,7 +95,7 @@ def mask(*args, **kwargs):
     Mask the map
 
     """
-    if len(args) > 0 and type(args[0]) == "str" or "input_map_filename" in kwargs:
+    if (len(args) > 0 and isinstance(args[0], str)) or "input_map_filename" in kwargs:
         func = mapfile_mask
     else:
         func = array_mask
