@@ -207,6 +207,7 @@ def genmask(args):
         shape=args.shape,
         voxel_size=args.voxel_size,
         sigma=args.sigma,
+        recentre=args.recentre,
     )
 
 
@@ -908,6 +909,9 @@ def main(args=None):
         )
         parser_genmask.add_argument(
             "--sigma", dest="sigma", type=float, default=0, help="Soften the mask edge"
+        )
+        parser_genmask.add_argument(
+            "--recentre", dest="recentre", type=bool, default=False, help="Recentre the particle"
         )
 
     def add_mask_arguments(subparsers, parser_common):

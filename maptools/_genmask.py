@@ -28,6 +28,7 @@ def genmask(
     shape: tuple = (0, 0, 0),
     voxel_size: float = 1,
     sigma: float = 0,
+    recentre: bool = False
 ):
     """
     Generate the mask
@@ -40,6 +41,7 @@ def genmask(
         shape: The shape of the output map
         voxel_size: The voxel size of the output map
         sigma: Soften the mask with a Gaussian edge
+        recentre: Recentre the particle
 
     """
 
@@ -70,6 +72,11 @@ def genmask(
                 for atom in residue
             ]
         ).T
+
+        # Recentre
+        if recentre:
+            coords -= coords.mean(axis=1)[:,None]
+            coords += (np.array(shape) / 2)[:,None] * voxel_size
 
         # Print some infor
         logger.info("Min / Max X: %f / %f" % (coords[2].min(), coords[2].max()))
