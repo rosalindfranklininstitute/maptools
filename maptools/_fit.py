@@ -52,7 +52,6 @@ def fit(
 
     # Open log
     with open(log_filename, "w") as stdout:
-
         # Call refmac to convert map to mtz
         maptools.external.map2mtz(
             mapin=os.path.abspath(input_map_filename),

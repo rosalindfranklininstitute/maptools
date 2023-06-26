@@ -86,7 +86,6 @@ def _filter_ndarray(
     resolution: list = list(),
     voxel_size: tuple = (1, 1, 1),
 ) -> np.ndarray:
-
     # Check input resolution
     if type(resolution) == int or type(resolution) == float:
         resolution = [resolution]
@@ -105,7 +104,6 @@ def _filter_ndarray(
 
     # Create the filter mask
     if filter_type == "lowpass":
-
         # Create the low pass filter
         assert len(resolution) == 1
         d = resolution[0]
@@ -116,7 +114,6 @@ def _filter_ndarray(
             mask = r < (1 / d)
 
     elif filter_type == "highpass":
-
         # Create the high pass filter
         assert len(resolution) == 1
         d = resolution[0]
@@ -124,7 +121,6 @@ def _filter_ndarray(
         mask = r >= (1 / d)
 
     elif filter_type == "bandpass":
-
         # Create the band pass filter
         assert len(resolution) == 2
         assert resolution[1] > resolution[0]
@@ -132,7 +128,6 @@ def _filter_ndarray(
         mask = (r >= (1 / resolution[1])) & (r < (1 / resolution[0]))
 
     elif filter_type == "bandstop":
-
         # Create the band stop filter
         assert len(resolution) == 2
         assert resolution[1] > resolution[0]

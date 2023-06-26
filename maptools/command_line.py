@@ -911,7 +911,11 @@ def main(args=None):
             "--sigma", dest="sigma", type=float, default=0, help="Soften the mask edge"
         )
         parser_genmask.add_argument(
-            "--recentre", dest="recentre", type=bool, default=False, help="Recentre the particle"
+            "--recentre",
+            dest="recentre",
+            type=bool,
+            default=False,
+            help="Recentre the particle",
         )
 
     def add_mask_arguments(subparsers, parser_common):

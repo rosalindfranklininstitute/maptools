@@ -28,7 +28,7 @@ def genmask(
     shape: tuple = (0, 0, 0),
     voxel_size: float = 1,
     sigma: float = 0,
-    recentre: bool = False
+    recentre: bool = False,
 ):
     """
     Generate the mask
@@ -58,7 +58,6 @@ def genmask(
 
     # Add atom mask
     if input_pdb_filename is not None:
-
         # Read the structure
         structure = gemmi.read_structure(input_pdb_filename)
 
@@ -75,8 +74,8 @@ def genmask(
 
         # Recentre
         if recentre:
-            coords -= coords.mean(axis=1)[:,None]
-            coords += (np.array(shape) / 2)[:,None] * voxel_size
+            coords -= coords.mean(axis=1)[:, None]
+            coords += (np.array(shape) / 2)[:, None] * voxel_size
 
         # Print some infor
         logger.info("Min / Max X: %f / %f" % (coords[2].min(), coords[2].max()))

@@ -107,7 +107,6 @@ def _fsc_str(
     # Loop through all axes
     results = []
     for current_axis in axis:
-
         # Compute the FSC
         bins, num, fsc = _fsc_ndarray(
             data1,

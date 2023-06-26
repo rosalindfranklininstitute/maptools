@@ -97,7 +97,6 @@ def call_ccp4(
 
     # Change into a temporary directory
     with cd(os.path.expanduser(wd)):
-
         # Set the parameter file
         if param_file is None:
             param_file = "params.dat"
