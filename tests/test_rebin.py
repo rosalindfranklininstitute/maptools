@@ -4,7 +4,6 @@ import maptools
 
 
 def test_rebin(ideal_map_filename):
-
     _, output_map_filename = tempfile.mkstemp()
 
     maptools.rebin(

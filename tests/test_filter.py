@@ -4,10 +4,8 @@ import maptools
 
 
 def test_filter(ideal_map_filename):
-
     for filter_type in ["lowpass", "highpass", "bandpass", "bandstop"]:
         for filter_shape in ["square", "gaussian"]:
-
             if filter_shape == "gaussian" and filter_type != "lowpass":
                 continue
 

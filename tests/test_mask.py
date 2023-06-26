@@ -4,11 +4,8 @@ import maptools
 
 
 def test_mask(ideal_map_filename, mask_filename):
-
     for fourier_space in [True, False]:
-
         for shift in [True, False]:
-
             _, output_map_filename = tempfile.mkstemp()
 
             maptools.mask(

@@ -4,9 +4,7 @@ import maptools
 
 
 def test_fsc3d(ideal_map_filename, rec_map_filename):
-
     for axes in [0, 1, 2, (0, 1), (0, 2), (1, 2), (0, 1, 2), None]:
-
         _, output_map_filename = tempfile.mkstemp()
 
         maptools.fsc3d(

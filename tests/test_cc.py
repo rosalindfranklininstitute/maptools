@@ -4,7 +4,6 @@ import maptools
 
 
 def test_cc(ideal_map_filename, rec_map_filename):
-
     # Test cross correlation
     _, output_map_filename = tempfile.mkstemp()
 

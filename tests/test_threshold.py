@@ -4,11 +4,8 @@ import maptools
 
 
 def test_threshold(ideal_map_filename):
-
     for normalize in [True, False]:
-
         for zero in [True, False]:
-
             _, output_map_filename = tempfile.mkstemp()
 
             maptools.threshold(

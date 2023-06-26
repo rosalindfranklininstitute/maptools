@@ -7,7 +7,6 @@ import pytest
 
 @pytest.mark.skipif(not maptools.external.is_ccp4_available(), reason="requires CCP4")
 def test_fit(ideal_map_filename, pdb_filename):
-
     _, output_pdb_filename = tempfile.mkstemp()
     _, log_filename = tempfile.mkstemp()
 
